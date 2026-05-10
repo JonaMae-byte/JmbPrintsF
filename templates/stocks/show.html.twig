@@ -1,0 +1,282 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Stock Details | JMB Prints{% endblock %}
+
+{% block body %}
+<style>
+/* ========= PAGE SHELL ========= */
+.page-show-shell {
+    padding: 32px;
+    min-height: calc(100vh - 120px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ========= DETAILS CONTAINER ========= */
+.details-container {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* ========= PAGE HEADER ========= */
+.page-header {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    padding: 24px 32px;
+    border-radius: 16px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.page-header h1 {
+    font-size: 32px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* ========= CONTENT CARD ========= */
+.content-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 16px;
+    padding: 40px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+/* ========= DETAILS GRID ========= */
+.details-grid {
+    display: grid;
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+.detail-item {
+    background: #f8f9fa;
+    padding: 24px;
+    border-radius: 12px;
+    border: 2px solid #e2e8f0;
+    transition: all 0.3s ease;
+}
+
+.detail-item:hover {
+    border-color: #007bff;
+    background: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.1);
+}
+
+.detail-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #718096;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+}
+
+.detail-label i {
+    font-size: 16px;
+    color: #007bff;
+}
+
+.detail-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: #2d3748;
+}
+
+.detail-value.quantity {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* ========= ACTION BUTTONS ========= */
+.action-buttons {
+    display: flex;
+    gap: 12px;
+    padding-top: 24px;
+    border-top: 2px solid #f0f0f0;
+}
+
+.btn {
+    padding: 14px 32px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 15px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: none;
+    cursor: pointer;
+    flex: 1;
+}
+
+.btn-back {
+    background: rgba(255, 255, 255, 0.95);
+    color: #4a5568;
+    border: 2px solid #e2e8f0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.btn-back:hover {
+    background: #f8f9fa;
+    border-color: #cbd5e0;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.btn-edit {
+    background: linear-gradient(135deg, #005b96, #007bff);
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 91, 150, 0.3);
+}
+
+.btn-edit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 91, 150, 0.4);
+}
+
+.btn-delete {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    color: white;
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+
+.btn-delete:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(220, 53, 69, 0.4);
+}
+
+/* ========= INFO BANNER ========= */
+.info-banner {
+    background: linear-gradient(135deg, rgba(23, 162, 184, 0.1) 0%, rgba(19, 132, 150, 0.1) 100%);
+    border: 2px solid rgba(23, 162, 184, 0.3);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.info-banner i {
+    font-size: 20px;
+    color: #17a2b8;
+}
+
+.info-banner p {
+    margin: 0;
+    font-size: 14px;
+    color: #2d3748;
+    font-weight: 500;
+}
+
+/* ========= RESPONSIVE ========= */
+@media (max-width: 768px) {
+    .page-show-shell {
+        padding: 20px;
+    }
+
+    .page-header {
+        padding: 20px;
+    }
+
+    .page-header h1 {
+        font-size: 24px;
+    }
+
+    .content-card {
+        padding: 24px;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
+    }
+
+    .detail-value {
+        font-size: 24px;
+    }
+}
+</style>
+
+<div class="page-show-shell">
+    <div class="details-container">
+        <div class="page-header">
+            <h1>
+                <i class="fas fa-eye"></i>
+                Stock Details
+            </h1>
+        </div>
+
+        <div class="content-card">
+            <div class="info-banner">
+                <i class="fas fa-info-circle"></i>
+                <p>Viewing stock information for ID #{{ stock.id }}</p>
+            </div>
+
+            <div class="details-grid">
+                <div class="detail-item">
+                    <div class="detail-label">
+                        <i class="fas fa-hashtag"></i>
+                        Stock ID
+                    </div>
+                    <div class="detail-value">#{{ stock.id }}</div>
+                </div>
+
+                <div class="detail-item">
+                    <div class="detail-label">
+                        <i class="fas fa-tag"></i>
+                        Product Name
+                    </div>
+                    <div class="detail-value">{{ stock.product.name }}</div>
+                </div>
+
+                <div class="detail-item">
+                    <div class="detail-label">
+                        <i class="fas fa-sort-numeric-up"></i>
+                        Quantity Available
+                    </div>
+                    <div class="detail-value quantity">{{ stock.quantity }}</div>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <a href="{{ path('app_stocks_index') }}" class="btn btn-back">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to List
+                </a>
+                <a href="{{ path('app_stocks_edit', {'id': stock.id}) }}" class="btn btn-edit">
+                    <i class="fas fa-edit"></i>
+                    Edit Stock
+                </a>
+                {{ include('stocks/_delete_form.html.twig') }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

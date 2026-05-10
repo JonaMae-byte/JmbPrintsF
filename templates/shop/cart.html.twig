@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<h2>Your Cart</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Product</th>
+            <th>Qty</th>
+            <th>Price</th>
+            <th>Total</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in items %}
+            <tr>
+                <td>{{ item.product.name }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>₱{{ item.product.price }}</td>
+                <td>₱{{ item.lineTotal }}</td>
+                <td>
+                    <a href="{{ path('cart_remove', {id: item.product.id}) }}"
+                       class="btn btn-danger btn-sm">Remove</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h3>Total: ₱{{ total }}</h3>
+
+<form action="{{ path('cart_checkout') }}" method="POST">
+    <button class="btn btn-success">Checkout</button>
+</form>
+
+{% endblock %}

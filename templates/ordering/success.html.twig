@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="container py-5 text-center">
+    <h2 class="fw-bold text-success">Order Placed Successfully!</h2>
+    <p>Your order ID: <strong>{{ order.id }}</strong></p>
+
+    <a href="{{ path('ordering_index') }}" class="btn btn-primary mt-3">
+        Back to Ordering
+    </a>
+</div>
+{% endblock %}

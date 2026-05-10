@@ -1,0 +1,522 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Orders | JMB Prints{% endblock %}
+
+{% block body %}
+<style>
+/* ========= MAIN CONTENT ========= */
+main {
+    padding: 32px;
+    margin-left: 0 !important;
+    transition: none !important;
+}
+
+/* ========= PAGE HEADER ========= */
+.page-header {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    padding: 24px 32px;
+    border-radius: 16px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.page-header h1 {
+    font-size: 32px;
+    font-weight: 700;
+    text-align: center;
+    background: linear-gradient(135deg, #005b96 0%, #007bff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0;
+}
+
+/* ========= CONTENT CARD ========= */
+.content-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 16px;
+    padding: 32px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+/* ========= TABLE CONTAINER ========= */
+.table-container {
+    overflow-x: auto;
+    border-radius: 12px;
+}
+
+/* ========= TABLE ========= */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+thead {
+    background: linear-gradient(135deg, #005b96 0%, #007bff 100%);
+}
+
+th {
+    color: white;
+    padding: 16px 20px;
+    text-transform: uppercase;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-align: center;
+}
+
+tbody tr {
+    transition: all 0.2s ease;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+tbody tr:last-child {
+    border-bottom: none;
+}
+
+td {
+    padding: 18px 20px;
+    font-size: 15px;
+    color: #4a5568;
+    text-align: center;
+}
+
+/* ========= PRIORITY BADGES ========= */
+.priority-rush {
+    display: inline-block;
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    color: white;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 13px;
+}
+
+.priority-normal {
+    display: inline-block;
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 13px;
+}
+
+/* ========= STATUS BADGES ========= */
+.status-pending {
+    color: #ffc107;
+    font-weight: 600;
+}
+
+.status-processing {
+    color: #ff8c00;
+    font-weight: 600;
+}
+
+.status-completed {
+    color: #28a745;
+    font-weight: 600;
+}
+
+/* ========= ACTION BUTTONS ========= */
+.actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+}
+
+.btn {
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 700;
+    transition: all 0.3s ease;
+    font-size: 18px;
+    display: inline-flex;
+    align-items: center;
+    position: relative;
+    gap: 6px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    justify-content: center;
+}
+
+.btn i {
+    font-size: 20px;
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.btn-view { 
+    background: linear-gradient(135deg, #17a2b8, #138496);
+    color: white;
+    box-shadow: 0 2px 8px rgba(23, 162, 184, 0.3);
+}
+
+.btn-view:hover { 
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(23, 162, 184, 0.4);
+}
+
+.btn-process { 
+    background: linear-gradient(135deg, #1f7cff, #0058d6);
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 4px 14px rgba(0, 88, 214, 0.45);
+}
+
+.btn-process:hover { 
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 18px rgba(0, 88, 214, 0.5);
+}
+
+.btn-done { 
+    background: linear-gradient(135deg, #2cc56f, #14864a);
+    color: white;
+    border-color: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 4px 14px rgba(20, 134, 74, 0.42);
+}
+
+.btn-done:hover { 
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 18px rgba(20, 134, 74, 0.48);
+}
+
+.btn-cancel {
+    background: linear-gradient(135deg, #ff4b5c, #cc1f35);
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 4px 14px rgba(204, 31, 53, 0.42);
+}
+
+.btn-cancel:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 18px rgba(204, 31, 53, 0.5);
+}
+
+.btn.is-disabled {
+    background: #b4bcc7;
+    border-color: #b4bcc7;
+    color: #ffffff;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+    pointer-events: none;
+    opacity: 0.85;
+}
+
+/* ========= POPUP ========= */
+#viewPopup {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 32px;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    z-index: 9999;
+    width: 400px;
+    max-width: 90%;
+}
+
+#viewPopup h3 {
+    margin: 0 0 20px 0;
+    font-size: 24px;
+    color: #005b96;
+}
+
+#popupContent {
+    margin: 20px 0;
+    text-align: left;
+    line-height: 1.8;
+    color: #4a5568;
+}
+
+#popupContent strong {
+    color: #005b96;
+}
+
+#viewPopup button {
+    background: linear-gradient(135deg, #005b96, #007bff);
+    border: none;
+    color: white;
+    padding: 10px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 8px rgba(0, 91, 150, 0.3);
+}
+
+#viewPopup button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 12px rgba(0, 91, 150, 0.4);
+}
+
+/* ========= POPUP OVERLAY ========= */
+#popupOverlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9998;
+}
+
+/* ========= RESPONSIVE ========= */
+@media (max-width: 768px) {
+    main {
+        padding: 20px;
+    }
+
+    .page-header {
+        padding: 20px;
+    }
+
+    .page-header h1 {
+        font-size: 24px;
+    }
+
+    .content-card {
+        padding: 20px;
+    }
+
+    .table-container {
+        overflow-x: auto;
+    }
+
+    table {
+        min-width: 900px;
+    }
+
+    .actions {
+        flex-direction: column;
+    }
+}
+</style>
+
+<main>
+    <div class="page-header">
+        <h1>📦 Orders Management</h1>
+    </div>
+
+    <div class="content-card">
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer</th>
+                        <th>Design</th>
+                        <th>Category</th>
+                        <th>Quantity</th>
+                        <th>Priority</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+    {% for order in orders %}
+        <tr data-order-id="{{ order.id }}">
+            <td><strong>#{{ order.id }}</strong></td>
+            <td>{{ order.customerName }}</td>
+
+            <td>
+                {% if order.orderItems|length > 0 %}
+                    <ul style="list-style: none; padding: 0; margin: 0;">
+                        {% for item in order.orderItems %}
+                            <li>{{ item.product ? item.product.name : 'Unknown Product' }}</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <em>No Items</em>
+                {% endif %}
+            </td>
+
+            <td>
+                {% if order.orderItems|length > 0 %}
+                    <ul style="list-style: none; padding: 0; margin: 0;">
+                        {% for item in order.orderItems %}
+                            <li>{{ item.product and item.product.category ? item.product.category.name : 'Uncategorized' }}</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <em>—</em>
+                {% endif %}
+            </td>
+
+            <td>
+                {% if order.orderItems|length > 0 %}
+                    {% set totalQty = 0 %}
+                    {% for item in order.orderItems %}
+                        {% set totalQty = totalQty + item.quantity %}
+                    {% endfor %}
+                    {{ totalQty }}
+                {% else %}
+                    0
+                {% endif %}
+            </td>
+
+            <td>
+                <span class="priority-normal">Normal</span>
+            </td>
+
+            <td class="status 
+                {% if order.status == 'Pending' %}status-pending
+                {% elseif order.status == 'Processing' %}status-processing
+                {% elseif order.status == 'Completed' %}status-completed
+                {% endif %}
+            ">
+                {{ order.status }}
+            </td>
+
+            <td>
+                <div class="actions">
+
+                    <!-- REMOVED VIEW BUTTON -->
+
+                    <a href="{{ path('order_process', {id: order.id}) }}" 
+                    class="btn btn-process {% if order.status != 'Pending' %}is-disabled{% endif %}"
+                    title="Process"
+                    aria-label="Process"
+                    {% if order.status != 'Pending' %}aria-disabled="true"{% endif %}>
+                    <i class="fas fa-cog" aria-hidden="true"></i>
+                    <span class="sr-only">Process</span>
+                    </a>
+
+                    <a href="{{ path('order_done', {id: order.id}) }}" 
+                    class="btn btn-done {% if order.status == 'Completed' %}is-disabled{% endif %}"
+                    title="Done"
+                    aria-label="Done"
+                    {% if order.status == 'Completed' %}aria-disabled="true"{% endif %}>
+                    <i class="fas fa-check" aria-hidden="true"></i>
+                    <span class="sr-only">Done</span>
+                    </a>
+
+                    <a href="{{ path('order_cancel', {id: order.id}) }}" 
+                    class="btn btn-cancel {% if order.status in ['Processing', 'Completed'] %}is-disabled{% endif %}"
+                    title="Cancel"
+                    aria-label="Cancel"
+                    {% if order.status in ['Processing', 'Completed'] %}
+                    aria-disabled="true"
+                    onclick="return false;"
+                    {% else %}
+                    onclick="return confirm('Cancel this order?');"
+                    {% endif %}>
+                    <i class="fas fa-times-circle" aria-hidden="true"></i>
+                    <span class="sr-only">Cancel</span>
+                    </a>
+
+                </div>
+            </td>
+
+        </tr>
+    {% endfor %}
+</tbody>
+
+
+            </table>
+        </div>
+    </div>
+</main>
+
+<!-- Popup Overlay -->
+<div id="popupOverlay"></div>
+
+<!-- Popup for View -->
+<div id="viewPopup">
+    <h3>📦 Order Details</h3>
+    <div id="popupContent"></div>
+    <button onclick="closePopup()">Close</button>
+</div>
+
+<script>
+function closePopup() {
+    document.getElementById('viewPopup').style.display = 'none';
+    document.getElementById('popupOverlay').style.display = 'none';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const overlay = document.getElementById('popupOverlay');
+    
+    // Close popup when clicking overlay
+    overlay.addEventListener('click', closePopup);
+    
+    document.querySelectorAll('tbody tr').forEach(row => {
+        const statusCell = row.querySelector('.status');
+        const btnView = row.querySelector('.btn-view');
+        const btnProcess = row.querySelector('.btn-process');
+        const btnDone = row.querySelector('.btn-done');
+
+        // View Button with popup
+        btnView.addEventListener('click', () => {
+            const orderId = row.dataset.orderId;
+            const customer = row.children[1].textContent.trim();
+            const design = row.children[2].textContent.trim();
+            const quantity = row.children[3].textContent.trim();
+            const priority = row.children[4].textContent.trim();
+            const status = row.children[5].textContent.trim();
+
+            document.getElementById('popupContent').innerHTML = `
+                <strong>Order ID:</strong> ${orderId}<br>
+                <strong>Customer:</strong> ${customer}<br>
+                <strong>Design:</strong> ${design}<br>
+                <strong>Quantity:</strong> ${quantity}<br>
+                <strong>Priority:</strong> ${priority}<br>
+                <strong>Status:</strong> ${status}
+            `;
+            document.getElementById('viewPopup').style.display = 'block';
+            document.getElementById('popupOverlay').style.display = 'block';
+        });
+
+        // Process Button
+        btnProcess.addEventListener('click', () => {
+            statusCell.textContent = 'Processing';
+            statusCell.className = 'status status-processing';
+        });
+
+        // Done Button
+        btnDone.addEventListener('click', () => {
+            statusCell.textContent = 'Completed';
+            statusCell.className = 'status status-completed';
+            
+            // Disable Done button
+            btnDone.disabled = true;
+            
+            // Disable Process button too
+            btnProcess.disabled = true;
+        });
+    });
+});
+</script>
+{% endblock %}

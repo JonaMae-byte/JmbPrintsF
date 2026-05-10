@@ -1,0 +1,15 @@
+{# Unified navbar entrypoint used by base and CRUD pages #}
+{% include 'components/_navbar.html.twig' with {
+    navbar_search_href: navbar_search_href|default('#'),
+    navbar_search_label: navbar_search_label|default('Search'),
+    navbar_page_search_enabled: navbar_page_search_enabled|default(true),
+    navbar_page_search_root: navbar_page_search_root|default('main'),
+    navbar_page_search_item: navbar_page_search_item|default('h1, h2, h3, h4, h5, h6, p, td, th, li, label, .card-title, .card-text, .table td, .table th'),
+    navbar_page_search_input_label: navbar_page_search_input_label|default('Search this page'),
+    navbar_page_search_placeholder: navbar_page_search_placeholder|default('Keyword…'),
+    navbar_page_search_button_label: navbar_page_search_button_label|default('Search'),
+    navbar_notifications_enabled: navbar_notifications_enabled|default(is_granted('ROLE_ADMIN')),
+    navbar_notifications_count: navbar_notifications_count|default(0),
+    navbar_notifications: navbar_notifications|default([]),
+} only %}
+

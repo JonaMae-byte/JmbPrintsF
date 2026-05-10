@@ -1,0 +1,610 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard | JMB Prints{% endblock %}
+
+{% block navbar %}
+    {% include 'navbar.html.twig' with {
+        navbar_page_search_enabled: true,
+        navbar_page_search_root: '#dashboard-page-search-root',
+        navbar_notifications_enabled: true,
+        navbar_notifications_count: notifications|length,
+        navbar_notifications: notifications,
+    } %}
+{% endblock %}
+
+{% block body %}
+<style>
+:root {
+  --admin-bg0: #060a10;
+  --admin-bg1: #0b1220;
+  --admin-bg2: #0f172a;
+  --admin-card: rgba(18, 27, 45, 0.9);
+  --admin-border: rgba(125, 211, 252, 0.18);
+  --admin-accent: #3b82f6;
+  --admin-accent-2: #22d3ee;
+  --admin-text: #e2e8f0;
+  --admin-muted: #94a3b8;
+}
+
+.content {
+  margin: -32px;
+  padding: 32px;
+  min-height: calc(100vh - 32px);
+  background:
+    radial-gradient(circle at 10% 0%, rgba(59, 130, 246, 0.16), transparent 35%),
+    radial-gradient(circle at 90% 20%, rgba(34, 211, 238, 0.12), transparent 28%),
+    linear-gradient(165deg, var(--admin-bg0) 0%, var(--admin-bg1) 44%, var(--admin-bg2) 100%);
+  color: var(--admin-text);
+}
+
+.dashboard-topbar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.dashboard-topbar h1 {
+  margin: 0;
+  font-size: 1.9rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #f8fafc, #93c5fd);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.dashboard-topbar::after {
+  content: "Admin";
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--admin-border);
+  background: rgba(59, 130, 246, 0.14);
+  color: #bfdbfe;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 18px;
+  margin-bottom: 24px;
+}
+
+.dashboard-card {
+  position: relative;
+  border-radius: 18px;
+  padding: 22px;
+  background: var(--admin-card);
+  border: 1px solid var(--admin-border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  overflow: hidden;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.dashboard-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--admin-accent), var(--admin-accent-2));
+}
+
+.dashboard-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(125, 211, 252, 0.34);
+  box-shadow: 0 18px 38px rgba(2, 6, 23, 0.52);
+}
+
+.dashboard-card .card-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+  font-size: 1.5rem;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.22), rgba(34, 211, 238, 0.14));
+}
+
+.dashboard-card h5 {
+  margin: 0 0 8px;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--admin-muted);
+  font-weight: 600;
+}
+
+.dashboard-card h2 {
+  margin: 0;
+  font-size: 1.9rem;
+  color: #f8fafc;
+  font-weight: 700;
+}
+
+.trend {
+  margin-top: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 0.74rem;
+  font-weight: 600;
+}
+
+.trend.positive { color: #86efac; background: rgba(34, 197, 94, 0.18); }
+.trend.negative { color: #fca5a5; background: rgba(239, 68, 68, 0.18); }
+.trend.warning { color: #fde68a; background: rgba(245, 158, 11, 0.2); }
+
+.print-schedule,
+.top-products,
+.low-stocks,
+.calendar {
+  border-radius: 18px;
+  background: var(--admin-card);
+  border: 1px solid var(--admin-border);
+  padding: 22px 24px;
+  margin-bottom: 22px;
+  backdrop-filter: blur(12px);
+}
+
+.print-schedule h2,
+.top-products h2,
+.low-stocks h2,
+.calendar h2 {
+  margin: 0 0 16px;
+  font-size: 1.05rem;
+  color: #e2e8f0;
+  font-weight: 600;
+}
+
+.schedule-table,
+.top-products-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.schedule-table th,
+.top-products-table th {
+  text-align: left;
+  padding: 12px 13px;
+  background: rgba(15, 23, 42, 0.85);
+  color: var(--admin-muted);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+}
+
+.schedule-table td,
+.top-products-table td {
+  padding: 13px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+  color: var(--admin-text);
+  vertical-align: top;
+}
+
+.schedule-table tbody tr,
+.top-products-table tbody tr {
+  transition: background 0.2s ease;
+}
+
+.schedule-table tbody tr:hover,
+.top-products-table tbody tr:hover {
+  background: rgba(59, 130, 246, 0.09);
+}
+
+.status {
+  font-weight: 600;
+  color: #bfdbfe;
+}
+
+.btn-view,
+.btn-done {
+  border: 1px solid rgba(125, 211, 252, 0.25);
+  background: rgba(59, 130, 246, 0.22);
+  color: #e0f2fe;
+  border-radius: 10px;
+  padding: 7px 12px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-view:hover,
+.btn-done:hover {
+  background: rgba(59, 130, 246, 0.36);
+  transform: translateY(-1px);
+}
+
+.dashboard-bottom {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 22px;
+}
+
+.calendar iframe {
+  width: 100%;
+  height: 420px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 12px;
+  background: #0f172a;
+}
+
+#viewPopup {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(92vw, 420px);
+  padding: 22px;
+  border-radius: 16px;
+  border: 1px solid var(--admin-border);
+  background: rgba(15, 23, 42, 0.98);
+  box-shadow: 0 24px 60px rgba(2, 6, 23, 0.7);
+  color: var(--admin-text);
+  z-index: 9999;
+}
+
+#viewPopup h3 {
+  margin: 0 0 12px;
+  font-size: 1.1rem;
+  color: #e2e8f0;
+}
+
+#popupContent {
+  color: var(--admin-muted);
+  line-height: 1.7;
+  margin-bottom: 12px;
+}
+
+#popupContent strong {
+  color: #bfdbfe;
+}
+
+#viewPopup button {
+  border: 1px solid rgba(125, 211, 252, 0.25);
+  background: rgba(59, 130, 246, 0.22);
+  color: #e0f2fe;
+  border-radius: 10px;
+  padding: 10px 14px;
+  width: 100%;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+#viewPopup button:hover {
+  background: rgba(59, 130, 246, 0.36);
+}
+
+@media (max-width: 900px) {
+  .content {
+    margin: -20px;
+    padding: 20px;
+  }
+}
+</style>
+
+<div class="content">
+<div id="dashboard-page-search-root">
+  <div class="dashboard-topbar">
+    <h1 data-page-search-item>Dashboard Overview</h1>
+  </div>
+
+  <div class="dashboard-grid">
+    <div class="dashboard-card total-orders" data-page-search-item>
+      <div class="card-icon">🛒</div>
+      <h5>Total Orders</h5>
+      <h2 id="totalOrders">{{ totalOrders|default(0) }}</h2>
+      <p class="trend positive" id="totalOrdersTrend">Live</p>
+    </div>
+
+    <div class="dashboard-card pending-orders" data-page-search-item>
+      <div class="card-icon">⏳</div>
+      <h5>Pending Orders</h5>
+      <h2 id="pendingOrders">{{ pendingOrders|default(0) }}</h2>
+      <p class="trend negative" id="pendingTrend">—</p>
+    </div>
+
+    <div class="dashboard-card stock-alerts" data-page-search-item>
+      <div class="card-icon">📦</div>
+      <h5>Low Stock Alerts</h5>
+      <h2 id="lowStockCount">{{ lowStockCount|default(0) }}</h2>
+      <p class="trend warning" id="lowStockNote">Threshold: {{ lowStockThreshold|default(10) }}</p>
+    </div>
+
+    <div class="dashboard-card revenue" data-page-search-item>
+      <div class="card-icon">💰</div>
+      <h5>Revenue</h5>
+      <h2 id="revenue">₱{{ revenue is defined ? revenue|number_format(2,'.',',') : '0.00' }}</h2>
+      <p class="trend positive" id="revenueTrend">Realtime</p>
+    </div>
+  </div>
+
+  <section class="print-schedule">
+    <h2 data-page-search-item>Printing Schedule</h2>
+    <table class="schedule-table" id="scheduleTable">
+      <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Customer</th>
+          <th>Items</th>
+          <th>Status</th>
+          <th>Created At</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="scheduleBody">
+        {% for order in printingSchedule %}
+          <tr data-id="{{ order.id }}" data-page-search-item>
+            <td>#{{ order.id }}</td>
+            <td>{{ order.customerName }}</td>
+            <td>
+              <ul style="list-style:none;padding:0;margin:0;">
+                {% for item in order.items %}
+                  <li>{{ item.productName }} × {{ item.qty }} — ₱{{ item.subtotal|number_format(2,'.',',') }}</li>
+                {% endfor %}
+              </ul>
+            </td>
+            <td class="status">{{ order.status }}</td>
+            <td>{{ order.createdAt }}</td>
+            <td class="actions"><button class="btn-view">👁 View</button></td>
+          </tr>
+        {% else %}
+          <tr><td colspan="6" class="text-center">No active orders</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+
+  <section class="top-products">
+    <h2 data-page-search-item>Top Products / Designs</h2>
+    <table class="top-products-table" id="topProductsTable">
+      <thead><tr><th>Product Name</th><th>Orders</th><th>Revenue</th></tr></thead>
+      <tbody id="topProductsBody">
+        {% for p in topProducts %}
+          <tr data-page-search-item>
+            <td>{{ p.name }}</td>
+            <td>{{ p.ordersCount }}</td>
+            <td>₱{{ p.revenue|number_format(2,'.',',') }}</td>
+          </tr>
+        {% else %}
+          <tr><td colspan="3" class="text-center">No product sales yet</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+
+  <section class="low-stocks">
+    <h2 data-page-search-item>Low Stock Details</h2>
+    <table class="top-products-table">
+      <thead><tr><th>Product</th><th>Quantity</th></tr></thead>
+      <tbody id="lowStocksBody">
+        {% for s in lowStocks %}
+          <tr data-page-search-item>
+            <td>{{ s.productName }}</td>
+            <td>{{ s.quantity }}</td>
+          </tr>
+        {% else %}
+          <tr><td colspan="2" class="text-center">No low stock items</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+
+<div class="dashboard-bottom">
+  <section class="calendar" data-page-search-item>
+    <h2>Real-Time Calendar</h2>
+    <iframe 
+      src="https://calendar.google.com/calendar/embed?src=YOUR_CALENDAR_LINK&ctz=Asia%2FManila" 
+      style="border: 0" 
+      frameborder="0" 
+      scrolling="no">
+    </iframe>
+  </section>
+
+</div>
+
+</div>{# end #dashboard-page-search-root #}
+
+</div>
+
+<div id="viewPopup" style="display:none;">
+  <h3>Order Details</h3>
+  <div id="popupContent"></div>
+  <button onclick='document.getElementById("viewPopup").style.display="none"'>Close</button>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+{{ parent() }}
+<script>
+/**
+ * Poller: fetch /dashboard/stats every 10 seconds and update the DOM
+ * The endpoint returns JSON shaped like the array returned by computeStats()
+ */
+const POLL_INTERVAL = 10000; // 10s
+let pollTimer = null;
+let allNotifications = [];
+let activeNotificationFilter = 'all';
+
+function escapeHtml(text) {
+  return String(text ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function renderNotifications(notifications) {
+  const list = document.getElementById('notificationList');
+  const badge = document.getElementById('notificationBadge');
+  allNotifications = Array.isArray(notifications) ? notifications : [];
+
+  let items = allNotifications;
+  if (activeNotificationFilter !== 'all') {
+    items = allNotifications.filter(n => (n.type || '') === activeNotificationFilter);
+  }
+
+  badge.textContent = allNotifications.length;
+  if (items.length === 0) {
+    list.innerHTML = `<div class="notification-item info">
+      <h6>No notifications</h6>
+      <p>Everything looks good right now.</p>
+      <div class="notification-time">Just now</div>
+    </div>`;
+    return;
+  }
+
+  list.innerHTML = items.map(n => `
+    <div class="notification-item ${escapeHtml(n.severity || 'info')}">
+      <h6>${escapeHtml(n.title || 'Notification')}</h6>
+      <p>${escapeHtml(n.message || '')}</p>
+      <div class="notification-time">${escapeHtml(n.timestamp || 'Now')}</div>
+    </div>
+  `).join('');
+}
+
+function setNotificationFilter(filterType) {
+  activeNotificationFilter = filterType;
+  document.querySelectorAll('.notification-filter-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-filter') === filterType);
+  });
+  renderNotifications(allNotifications);
+}
+
+function updateDashboardFromJson(data) {
+  document.getElementById('totalOrders').innerText = data.totalOrders ?? 0;
+  document.getElementById('pendingOrders').innerText = data.pendingOrders ?? 0;
+  document.getElementById('lowStockCount').innerText = data.lowStockCount ?? 0;
+  document.getElementById('lowStockNote').innerText = 'Threshold: ' + (data.lowStockThreshold ?? 10);
+  document.getElementById('revenue').innerText = '₱' + Number(data.revenue || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+  // Top products
+  const topBody = document.getElementById('topProductsBody');
+  topBody.innerHTML = '';
+  if (Array.isArray(data.topProducts) && data.topProducts.length) {
+    data.topProducts.forEach(p => {
+      const tr = document.createElement('tr');
+      tr.setAttribute('data-page-search-item', '');
+      tr.innerHTML = `<td>${p.name}</td><td>${p.ordersCount}</td><td>₱${Number(p.revenue || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>`;
+      topBody.appendChild(tr);
+    });
+  } else {
+    topBody.innerHTML = '<tr><td colspan="3" class="text-center">No product sales yet</td></tr>';
+  }
+
+  // Printing schedule
+  const scheduleBody = document.getElementById('scheduleBody');
+  scheduleBody.innerHTML = '';
+  if (Array.isArray(data.printingSchedule) && data.printingSchedule.length) {
+    data.printingSchedule.forEach(o => {
+      const itemsHtml = (o.items || []).map(i => `<li>${i.productName} × ${i.qty} — ₱${Number(i.subtotal || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</li>`).join('');
+      const tr = document.createElement('tr');
+      tr.setAttribute('data-id', o.id);
+      tr.setAttribute('data-page-search-item', '');
+      tr.innerHTML = `<td>#${o.id}</td>
+                      <td>${o.customerName}</td>
+                      <td><ul style="list-style:none;margin:0;padding:0;">${itemsHtml}</ul></td>
+                      <td class="status">${o.status}</td>
+                      <td>${o.createdAt}</td>
+                      <td class="actions"><button class="btn-view">👁 View</button></td>`;
+      scheduleBody.appendChild(tr);
+    });
+  } else {
+    scheduleBody.innerHTML = '<tr><td colspan="6" class="text-center">No active orders</td></tr>';
+  }
+
+  // Low stocks details
+  const lowBody = document.getElementById('lowStocksBody');
+  lowBody.innerHTML = '';
+  if (Array.isArray(data.lowStocks) && data.lowStocks.length) {
+    data.lowStocks.forEach(s => {
+      const tr = document.createElement('tr');
+      tr.setAttribute('data-page-search-item', '');
+      tr.innerHTML = `<td>${s.productName}</td><td>${s.quantity}</td>`;
+      lowBody.appendChild(tr);
+    });
+  } else {
+    lowBody.innerHTML = '<tr><td colspan="2" class="text-center">No low stock items</td></tr>';
+  }
+
+  renderNotifications(data.notifications);
+
+  document.dispatchEvent(new CustomEvent('page-search:refresh'));
+}
+
+async function pollStats() {
+  try {
+    const res = await fetch('{{ path('app_dashboard_stats') }}', { cache: 'no-store' });
+    if (!res.ok) throw new Error('Network response was not ok');
+    const data = await res.json();
+    updateDashboardFromJson(data);
+  } catch (err) {
+    console.error('Failed to fetch dashboard stats:', err);
+  } finally {
+    pollTimer = setTimeout(pollStats, POLL_INTERVAL);
+  }
+}
+
+// Start poller on page load
+document.addEventListener('DOMContentLoaded', function () {
+  // Start the poll immediately (page already rendered with initial stats)
+  pollStats();
+
+  const notificationBtn = document.getElementById('notificationBtn');
+  const notificationPanel = document.getElementById('notificationPanel');
+  const notificationFilters = document.getElementById('notificationFilters');
+  if (notificationBtn && notificationBtn.dataset.navbarNotificationsInit !== '1') {
+    notificationBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      notificationPanel.classList.toggle('open');
+    });
+    notificationFilters.addEventListener('click', function (e) {
+      const btn = e.target.closest('.notification-filter-btn');
+      if (!btn) return;
+      setNotificationFilter(btn.getAttribute('data-filter') || 'all');
+    });
+    document.addEventListener('click', function (e) {
+      if (!e.target.closest('.notification-wrap')) {
+        notificationPanel.classList.remove('open');
+      }
+    });
+  }
+
+  // Simple click handler for schedule view popup (delegated)
+  document.getElementById('scheduleTable').addEventListener('click', function (e) {
+    const btn = e.target.closest('.btn-view');
+    if (!btn) return;
+    const row = btn.closest('tr');
+    if (!row) return;
+
+    const id = row.dataset.id;
+    const createdAt = row.children[4].innerText;
+    const customer = row.children[1].innerText;
+    const itemsHtml = row.children[2].innerHTML;
+
+    const popup = document.getElementById('viewPopup');
+    document.getElementById('popupContent').innerHTML = `<strong>Order #${id}</strong><br><strong>Customer:</strong> ${customer}<br><strong>Created:</strong> ${createdAt}<br><strong>Items:</strong><ul style="margin:8px 0 0 0;padding:0;">${itemsHtml}</ul>`;
+    popup.style.display = 'block';
+  });
+});
+</script>
+{% endblock %}

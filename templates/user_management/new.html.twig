@@ -1,0 +1,142 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Create User{% endblock %}
+
+{% block body %}
+<style>
+/* ========= PAGE SHELL ========= */
+.page-shell {
+    padding: 40px;
+    margin-left: 0 !important;
+    transition: none !important;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ========= FORM CONTAINER ========= */
+.form-container {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* ========= PAGE HEADER ========= */
+.page-header {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    padding: 32px 40px;
+    border-radius: 20px;
+    margin-bottom: 28px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.page-header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.page-header h2 {
+    font-size: 38px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #007bff 0%, #00c6ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.page-header h2 i {
+    font-size: 36px;
+    background: linear-gradient(135deg, #007bff 0%, #00c6ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* ========= CONTENT CARD ========= */
+.content-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 48px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+/* ========= BUTTONS ========= */
+.btn {
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 15px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.95);
+    color: #4a5568;
+    border: 2px solid #e2e8f0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.btn-secondary:hover {
+    background: #f8f9fa;
+    border-color: #cbd5e0;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* ========= RESPONSIVE ========= */
+@media (max-width: 768px) {
+    .page-shell { padding: 24px; }
+    .page-header { padding: 24px; }
+    .page-header h2 { font-size: 28px; }
+    .page-header h2 i { font-size: 26px; }
+    .content-card { padding: 28px; }
+    .page-header-content {
+        flex-direction: column;
+        gap: 16px;
+        align-items: flex-start;
+    }
+    .btn-secondary {
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+}
+</style>
+
+<div class="page-shell">
+    <div class="form-container">
+        <div class="page-header">
+            <div class="page-header-content">
+                <h2><i class="fas fa-user-plus"></i> Create User</h2>
+                <a href="{{ path('user_management_index') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to List
+                </a>
+            </div>
+        </div>
+
+        <div class="content-card">
+            {% include 'user_management/_form.html.twig' with {
+                button_label: 'Create'
+            } %}
+        </div>
+    </div>
+</div>
+{% endblock %}

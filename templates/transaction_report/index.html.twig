@@ -1,0 +1,371 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Transaction Report | JMB Prints{% endblock %}
+
+{% block body %}
+<style>
+/* ========= TRANSACTION REPORT STYLES ========= */
+/* Note: Sidebar and base styles are inherited from base.html.twig */
+
+/* ========= CONTAINER ========= */
+.transaction-container {
+  max-width: 100%;
+}
+
+/* ========= HEADER SECTION ========= */
+.transaction-header {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 32px;
+  border-radius: 20px;
+  margin-bottom: 32px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.transaction-header h1 {
+  font-size: 36px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0 0 8px 0;
+}
+
+.transaction-header p {
+  color: #718096;
+  font-size: 16px;
+  margin: 0;
+}
+
+/* ========= SEARCH & FILTER BAR ========= */
+.filter-section {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  padding: 24px;
+  border-radius: 16px;
+  margin-bottom: 32px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.search-wrapper {
+  position: relative;
+  flex: 1;
+}
+
+.search-input {
+  width: 100%;
+  padding: 14px 20px 14px 50px;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 15px;
+  outline: none;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.search-input:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+}
+
+.search-icon {
+  position: absolute;
+  left: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #718096;
+  font-size: 18px;
+}
+
+/* ========= TABLE CONTAINER ========= */
+.table-container {
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.transaction-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* ========= TABLE HEADER ========= */
+.transaction-table thead {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.transaction-table thead th {
+  color: white;
+  font-weight: 600;
+  text-align: left;
+  padding: 20px 24px;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ========= TABLE BODY ========= */
+.transaction-table tbody tr {
+  border-bottom: 1px solid #f0f0f0;
+  transition: all 0.3s ease;
+}
+
+.transaction-table tbody tr:hover {
+  background: #f8f9ff;
+  transform: scale(1.002);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+}
+
+.transaction-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.transaction-table td {
+  padding: 20px 24px;
+  color: #4a5568;
+  font-size: 15px;
+  vertical-align: top;
+}
+
+.transaction-table td:first-child {
+  font-weight: 700;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.customer-name {
+  font-weight: 600;
+  color: #2d3748;
+}
+
+/* ========= STATUS BADGE ========= */
+.status-badge {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  display: inline-block;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  text-transform: capitalize;
+}
+
+.status-badge.pending {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: white;
+}
+
+.status-badge.completed {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  color: white;
+}
+
+.status-badge.cancelled {
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+  color: white;
+}
+
+/* ========= DATE & AMOUNT ========= */
+.order-date {
+  color: #718096;
+  font-size: 14px;
+}
+
+.total-amount {
+  font-size: 18px;
+  font-weight: 700;
+  color: #667eea;
+}
+
+/* ========= ITEMS LIST ========= */
+.items-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.items-list li {
+  padding: 8px 0;
+  border-bottom: 1px dashed #e2e8f0;
+  font-size: 14px;
+  color: #4a5568;
+}
+
+.items-list li:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.items-list strong {
+  color: #2d3748;
+  font-weight: 600;
+}
+
+.item-subtotal {
+  color: #667eea;
+  font-weight: 700;
+}
+
+/* ========= EMPTY STATE ========= */
+.no-orders {
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  padding: 80px 20px;
+  text-align: center;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.no-orders i {
+  font-size: 80px;
+  color: #cbd5e0;
+  margin-bottom: 24px;
+}
+
+.no-orders h3 {
+  color: #4a5568;
+  margin-bottom: 12px;
+  font-size: 24px;
+}
+
+.no-orders p {
+  color: #718096;
+  font-size: 16px;
+}
+
+/* ========= RESPONSIVE ========= */
+@media (max-width: 992px) {
+  .transaction-header {
+    padding: 24px 20px;
+  }
+
+  .transaction-header h1 {
+    font-size: 28px;
+  }
+
+  .table-container {
+    overflow-x: auto;
+  }
+
+  .transaction-table {
+    min-width: 900px;
+  }
+}
+
+@media (max-width: 768px) {
+  .transaction-header h1 {
+    font-size: 24px;
+  }
+
+  .transaction-table td,
+  .transaction-table thead th {
+    padding: 16px;
+    font-size: 14px;
+  }
+}
+</style>
+
+<div class="transaction-container">
+  <!-- HEADER SECTION -->
+  <div class="transaction-header">
+    <h1>📊 Transaction Report</h1>
+    <p>View and analyze all transaction history and order details</p>
+  </div>
+
+  <!-- SEARCH & FILTER -->
+  <div class="filter-section">
+    <div class="search-wrapper">
+      <i class="fas fa-search search-icon"></i>
+      <input type="text" id="searchTransactions" class="search-input" placeholder="Search by customer name or order ID...">
+    </div>
+  </div>
+
+  {% if orders is empty %}
+    <!-- EMPTY STATE -->
+    <div class="no-orders">
+      <i class="fas fa-receipt"></i>
+      <h3>No Transactions Found</h3>
+      <p>Transaction data will appear here once orders are placed</p>
+    </div>
+  {% else %}
+    <!-- TABLE -->
+    <div class="table-container">
+      <table class="transaction-table">
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Customer</th>
+            <th>Status</th>
+            <th>Date</th>
+            <th>Total Amount</th>
+            <th>Items Purchased</th>
+          </tr>
+        </thead>
+
+        <tbody id="transactionsTableBody">
+          {% for order in orders %}
+            <tr data-customer="{{ order.customerName|lower }}" data-orderid="{{ order.id }}">
+              <td>#{{ order.id }}</td>
+              <td class="customer-name">{{ order.customerName }}</td>
+              <td>
+                <span class="status-badge {{ order.status|lower }}">
+                  {{ order.status }}
+                </span>
+              </td>
+              <td class="order-date">{{ order.createdAt|date('M d, Y H:i') }}</td>
+
+              {# Compute total from all order items #}
+              <td class="total-amount">
+                ₱{{ order.orderItems|map(i => i.subtotal)|reduce((a, b) => a + b)|number_format(2) }}
+              </td>
+
+              <td>
+                <ul class="items-list">
+                  {% for item in order.orderItems %}
+                    <li>
+                      <strong>{{ item.product.name }}</strong> —
+                      {{ item.quantity }}x @ ₱{{ item.price|number_format(2) }}
+                      = <span class="item-subtotal">₱{{ item.subtotal|number_format(2) }}</span>
+                    </li>
+                  {% endfor %}
+                </ul>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% endif %}
+</div>
+
+<script>
+// Search functionality
+document.getElementById("searchTransactions")?.addEventListener("keyup", function() {
+  const searchTerm = this.value.toLowerCase();
+  const rows = document.querySelectorAll("#transactionsTableBody tr[data-customer]");
+
+  rows.forEach(row => {
+    const customerName = row.getAttribute("data-customer");
+    const orderId = row.getAttribute("data-orderid");
+    
+    const matchesSearch = customerName.includes(searchTerm) || orderId.includes(searchTerm);
+    
+    row.style.display = matchesSearch ? "" : "none";
+  });
+});
+</script>
+
+{% endblock %}

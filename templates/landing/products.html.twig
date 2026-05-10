@@ -1,0 +1,348 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Products | JMB Prints{% endblock %}
+
+{% block body %}
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --landing-nav-offset: 68px;
+    --black: #05070a;
+    --black-soft: #0a0d12;
+    --black-card: #0f1318;
+    --black-hover: #141a22;
+    --blue: #1d6ff2;
+    --blue-bright: #3d8fff;
+    --white: #ffffff;
+    --white-70: rgba(255,255,255,0.70);
+    --border: rgba(255,255,255,0.08);
+  }
+
+  body {
+    font-family: 'Outfit', sans-serif;
+    background: var(--black);
+    color: var(--white);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  .hero-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    padding: 16px 6%;
+    background: rgba(5, 7, 10, 0.88);
+    backdrop-filter: saturate(1.15) blur(14px);
+    -webkit-backdrop-filter: saturate(1.15) blur(14px);
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+  }
+
+  .hero-nav-shell {
+    max-width: 1280px;
+    margin: 0 auto;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+  }
+
+  .hero-brand {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--white);
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+
+  .hero-brand span { color: var(--blue-bright); }
+
+  .hero-links {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .hero-links a {
+    color: var(--white-70);
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+
+  .hero-links a:hover { color: var(--white); }
+
+  .nav-cta {
+    color: var(--white) !important;
+    background: var(--blue);
+    padding: 8px 18px;
+    border-radius: 3px;
+    font-weight: 600 !important;
+  }
+
+  .products-section {
+    padding: calc(var(--landing-nav-offset) + 52px) 6% 92px;
+    background: var(--black-soft);
+    position: relative;
+  }
+
+  .products-section::before {
+    content: '';
+    position: absolute;
+    top: var(--landing-nav-offset);
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1px;
+    height: 64px;
+    background: linear-gradient(to bottom, transparent, var(--blue));
+    opacity: 0.85;
+  }
+
+  .products-shell {
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+
+  .products-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 34px;
+  }
+
+  .section-label {
+    font-size: 12px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--blue-bright);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  .section-label::before {
+    content: '';
+    display: block;
+    width: 24px;
+    height: 1px;
+    background: var(--blue-bright);
+  }
+
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(40px, 4.2vw, 62px);
+    font-weight: 700;
+    line-height: 1.05;
+    color: var(--white);
+    letter-spacing: -0.3px;
+  }
+
+  .section-title em { font-style: italic; color: var(--blue-bright); }
+
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--white-70);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    text-decoration: none;
+    padding: 10px 14px;
+    font-weight: 500;
+  }
+
+  .btn-ghost:hover {
+    color: var(--white);
+    border-color: rgba(61, 143, 255, 0.4);
+    background: rgba(61, 143, 255, 0.08);
+  }
+
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+  }
+
+  .product-card {
+    border: 1px solid var(--border);
+    background: var(--black-card);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  }
+
+  .product-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(61, 143, 255, 0.35);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+    background: var(--black-hover);
+  }
+
+  .product-card-img {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+  }
+
+  .product-card-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .product-card-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(5, 7, 10, 0.72), rgba(5, 7, 10, 0.08));
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-start;
+    padding: 16px;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+
+  .product-card:hover .product-card-overlay { opacity: 1; }
+
+  .product-card-overlay span {
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--white);
+    border: 1px solid rgba(255, 255, 255, 0.38);
+    padding: 6px 10px;
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.35);
+  }
+
+  .product-info {
+    padding: 18px 18px 20px;
+  }
+
+  .product-info h4 {
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+    font-family: 'Cormorant Garamond', serif;
+  }
+
+  .product-info p {
+    color: rgba(255, 255, 255, 0.78);
+    line-height: 1.7;
+    font-size: clamp(1.05rem, 1.1vw, 1.18rem);
+  }
+
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+
+  [data-reveal].is-visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  @media (max-width: 980px) {
+    .products-grid { grid-template-columns: 1fr; }
+    .products-header { flex-direction: column; align-items: flex-start; }
+  }
+
+  @media (max-width: 768px) {
+    .products-section { padding: calc(var(--landing-nav-offset) + 36px) 5% 72px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-reveal] {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+</style>
+
+{% include 'landing/_landing_nav.html.twig' %}
+
+<section class="products-section" aria-labelledby="products-heading">
+  <div class="products-shell">
+    <div class="products-header" data-reveal>
+      <div>
+        <div class="section-label" data-reveal style="--reveal-delay: 60ms;">Our Creations</div>
+        <h2 class="section-title" id="products-heading" data-reveal style="--reveal-delay: 120ms;">Popular <em>Picks</em></h2>
+      </div>
+      <a href="{{ path('app_product_index') }}" class="btn-ghost" style="white-space:nowrap;" data-reveal style="--reveal-delay: 180ms;">
+        View All
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </div>
+
+    <div class="products-grid">
+      {% for row in popular_products %}
+        {% set product = row.product %}
+        {% set image_src = (product.image is defined and product.image and (product.image starts with 'http' or product.image starts with '/'))
+          ? product.image
+          : asset(product.image|default('placeholder.png')) %}
+        <div class="product-card" data-reveal>
+          <div class="product-card-img">
+            <img src="{{ image_src }}" alt="{{ product.name }}">
+            <div class="product-card-overlay"><span>Ordered {{ row.orderedQty }}x</span></div>
+          </div>
+          <div class="product-info">
+            <h4>{{ product.name }}</h4>
+            <p>{{ product.description ?: product.text }}</p>
+          </div>
+        </div>
+      {% else %}
+        <div class="product-card" data-reveal>
+          <div class="product-card-img">
+            <img src="{{ asset('mugs.jpg') }}" alt="Popular picks coming soon">
+            <div class="product-card-overlay"><span>No order data yet</span></div>
+          </div>
+          <div class="product-info">
+            <h4>Popular Picks Coming Soon</h4>
+            <p>Once customer orders come in, this section will automatically show your top-selling products.</p>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+<script>
+  (function () {
+    const revealItems = Array.from(document.querySelectorAll('[data-reveal]'));
+    if (!revealItems.length) return;
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      revealItems.forEach((item) => item.classList.add('is-visible'));
+      return;
+    }
+
+    const revealObserver = new IntersectionObserver((entries, observer) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('is-visible');
+        observer.unobserve(entry.target);
+      });
+    }, { threshold: 0.14, rootMargin: '0px 0px -8% 0px' });
+
+    revealItems.forEach((item) => revealObserver.observe(item));
+  })();
+</script>
+{% endblock %}

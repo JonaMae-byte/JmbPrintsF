@@ -1,0 +1,649 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Shop Products | JMB Prints{% endblock %}
+
+{# Top bar is the fixed shop navbar included in body (not the default app-navbar). #}
+{% block navbar %}{% endblock %}
+
+{% block body %}
+{% include 'components/_navbar_shop.html.twig' %}
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Syne:wght@700;800&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+.shop-page {
+    font-family: 'DM Sans', sans-serif;
+    background: transparent;
+    color: #e2e8f0;
+    min-height: 100vh;
+    padding: 32px 32px 60px;
+    padding-top: 110px;
+}
+
+/* ── Header ── */
+.shop-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+}
+
+.shop-brand {
+    font-family: 'Syne', sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    color: #f8fafc;
+    letter-spacing: -0.5px;
+}
+
+.shop-brand span { color: #2563eb; }
+
+.shop-subtitle {
+    font-size: 14px;
+    color: #94a3b8;
+    margin-top: 2px;
+}
+
+/* ── Filters ── */
+.filter-bar {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 28px;
+}
+
+.search-wrap { position: relative; flex: 1; }
+
+.search-wrap svg {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    color: #94a3b8;
+    pointer-events: none;
+}
+
+.search-input {
+    width: 100%;
+    padding: 11px 14px 11px 42px;
+    border: 1px solid rgba(125, 211, 252, 0.24);
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    background: rgba(15, 23, 42, 0.82);
+    color: #e2e8f0;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.search-input:focus { border-color: rgba(125, 211, 252, 0.45); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.18); }
+
+.search-input::placeholder { color: #94a3b8; }
+
+.cat-select {
+    padding: 11px 36px 11px 14px;
+    border: 1px solid rgba(125, 211, 252, 0.24);
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    background: rgba(15, 23, 42, 0.82);
+    color: #e2e8f0;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%239ca3af' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.2s;
+    min-width: 200px;
+}
+
+.cat-select:focus { border-color: rgba(125, 211, 252, 0.45); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.18); }
+
+/* ── Product Grid ── */
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+    gap: 20px;
+}
+
+/* ── Product Card ── */
+.product-card {
+    background: rgba(18, 27, 45, 0.92);
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(125, 211, 252, 0.2);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 40px rgba(2, 6, 23, 0.45);
+}
+
+/* Image */
+.product-image-wrap {
+    position: relative;
+    height: 240px;
+    overflow: hidden;
+    background: #0f172a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+    display: block;
+}
+
+.product-card:hover .product-image { transform: scale(1.05); }
+
+.product-no-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+}
+
+.product-no-image svg { width: 44px; height: 44px; color: #b8b0a4; }
+
+/* Badge */
+.product-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.3px;
+}
+
+.badge-available { background: rgba(34, 197, 94, 0.2); color: #86efac; }
+.badge-oos       { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
+
+/* Body */
+.product-body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.product-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: #f8fafc;
+    margin-bottom: 6px;
+    line-height: 1.4;
+}
+
+.product-description {
+    font-size: 13px;
+    color: #94a3b8;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    flex: 1;
+}
+
+/* Footer */
+.product-footer {
+    border-top: 1px solid rgba(148, 163, 184, 0.16);
+    padding-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.price-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.product-price {
+    font-family: 'Syne', sans-serif;
+    font-size: 24px;
+    font-weight: 800;
+    color: #f8fafc;
+    letter-spacing: -0.5px;
+    line-height: 1;
+}
+
+.price-currency {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: #94a3b8;
+    margin-right: 1px;
+    vertical-align: super;
+    line-height: 1;
+}
+
+.stock-tag {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #94a3b8;
+    white-space: nowrap;
+}
+
+.stock-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.stock-dot.available { background: #22c55e; }
+.stock-dot.oos       { background: #ef4444; }
+
+/* Actions Row */
+.actions-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Quantity Picker */
+.qty-wrap {
+    display: flex;
+    align-items: center;
+    background: rgba(15, 23, 42, 0.9);
+    border: 1px solid rgba(125, 211, 252, 0.24);
+    border-radius: 10px;
+    overflow: hidden;
+    flex-shrink: 0;
+    transition: border-color 0.2s;
+}
+
+.qty-wrap:hover { border-color: rgba(125, 211, 252, 0.45); }
+
+.qty-btn {
+    width: 34px;
+    height: 38px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 500;
+    color: #d1d5db;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s, color 0.15s;
+    line-height: 1;
+    padding: 0;
+}
+
+.qty-btn:hover:not(:disabled) { background: rgba(59, 130, 246, 0.16); color: #dbeafe; }
+.qty-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+.qty-num {
+    min-width: 32px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 600;
+    color: #f8fafc;
+    border-left: 1px solid rgba(148, 163, 184, 0.24);
+    border-right: 1px solid rgba(148, 163, 184, 0.24);
+    height: 38px;
+    line-height: 38px;
+    background: rgba(15, 23, 42, 0.8);
+}
+
+/* Add to Cart Button */
+.add-to-cart-btn {
+    flex: 1;
+    height: 38px;
+    background: rgba(59, 130, 246, 0.26);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    transition: background 0.2s ease, transform 0.15s ease;
+    white-space: nowrap;
+    text-decoration: none;
+}
+
+.add-to-cart-btn:hover:not(:disabled) { background: rgba(59, 130, 246, 0.42); }
+.add-to-cart-btn:active:not(:disabled) { transform: scale(0.97); }
+
+.add-to-cart-btn:disabled {
+    background: rgba(148, 163, 184, 0.35);
+    cursor: not-allowed;
+}
+
+.add-to-cart-btn svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+/* Out of Stock Banner */
+.oos-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    height: 38px;
+    background: rgba(239, 68, 68, 0.14);
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #fca5a5;
+}
+
+.oos-bar svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+/* ── Empty State ── */
+.empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 80px 20px;
+    background: rgba(18, 27, 45, 0.92);
+    border-radius: 16px;
+    border: 1px solid rgba(125, 211, 252, 0.2);
+}
+
+.empty-state svg { width: 56px; height: 56px; color: #d1d5db; margin-bottom: 20px; }
+.empty-state h3 { font-size: 20px; font-weight: 600; color: #e2e8f0; margin-bottom: 8px; }
+.empty-state p  { font-size: 14px; color: #94a3b8; }
+
+/* ── Toast Notification ── */
+.toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(15, 23, 42, 0.95);
+    color: #fff;
+    padding: 13px 20px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    opacity: 0;
+    transform: translateX(60px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    z-index: 10000;
+    pointer-events: none;
+    max-width: 320px;
+}
+
+.toast.show { opacity: 1; transform: translateX(0); }
+.toast.error { background: rgba(127, 29, 29, 0.95); }
+.toast svg   { width: 16px; height: 16px; flex-shrink: 0; }
+
+/* ── Responsive ── */
+@media (max-width: 992px) {
+    .shop-page { padding: 24px 20px 60px; padding-top: 100px; }
+    .filter-bar { flex-direction: column; }
+    .cat-select { width: 100%; min-width: unset; }
+}
+
+@media (max-width: 640px) {
+    .products-grid { grid-template-columns: 1fr; }
+    .shop-brand { font-size: 22px; }
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(60px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+</style>
+
+<div class="shop-page">
+
+    {# ── Header ── #}
+    <div class="shop-header">
+        <div>
+            <div class="shop-brand">JMB <span>Prints</span></div>
+            <div class="shop-subtitle">Discover our custom printed products</div>
+        </div>
+    </div>
+
+    {# ── Filters ── #}
+    <div class="filter-bar">
+        <div class="search-wrap">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <input type="text" id="searchProducts" class="search-input" placeholder="Search products...">
+        </div>
+        <select id="categoryFilter" class="cat-select">
+            <option value="all">All Categories</option>
+            {% for category in categories %}
+                <option value="{{ category.name|lower }}">{{ category.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    {# ── Product Grid ── #}
+    <div class="products-grid">
+
+        {% for product in products %}
+            {% set stockQty = stocksByProductId[product.id]|default(0) %}
+            {% set isOutOfStock = stockQty <= 0 %}
+
+            <div class="product-card"
+                 data-name="{{ product.name|lower }}"
+                 data-category="{{ product.category.name|lower }}">
+
+                {# Image #}
+                <div class="product-image-wrap">
+                    {% if product.image %}
+                        <img src="{{ asset(product.image) }}"
+                             class="product-image"
+                             alt="{{ product.name }}">
+                    {% else %}
+                        <div class="product-no-image">
+                            <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                <circle cx="8.5" cy="8.5" r="1.5"/>
+                                <path d="M21 15l-5-5L5 21"/>
+                            </svg>
+                        </div>
+                    {% endif %}
+                    <span class="product-badge {{ isOutOfStock ? 'badge-oos' : 'badge-available' }}">
+                        {{ isOutOfStock ? 'Out of Stock' : 'Available' }}
+                    </span>
+                </div>
+
+                {# Body #}
+                <div class="product-body">
+                    <div class="product-name">{{ product.name }}</div>
+                    <div class="product-description">
+                        High-quality custom printed product. Perfect for gifts, events, or personal use!
+                    </div>
+
+                    <div class="product-footer">
+
+                        {# Price + Stock Tag #}
+                        <div class="price-row">
+                            <div class="product-price">
+                                <span class="price-currency">₱</span>{{ product.price|number_format(2, '.', ',') }}
+                            </div>
+                            {% if isOutOfStock %}
+                                <div class="stock-tag">
+                                    <span class="stock-dot oos"></span>
+                                    Out of stock
+                                </div>
+                            {% else %}
+                                <div class="stock-tag">
+                                    <span class="stock-dot available"></span>
+                                    {{ stockQty }} available
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        {# Actions #}
+                        {% if isOutOfStock %}
+                            <div class="oos-bar">
+                                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>
+                                </svg>
+                                Currently unavailable
+                            </div>
+                        {% else %}
+                            <div class="actions-row">
+                                <div class="qty-wrap" data-stock="{{ stockQty }}">
+                                    <button type="button" class="qty-btn" onclick="decreaseQty(this)">−</button>
+                                    <span class="qty-num">1</span>
+                                    <button type="button" class="qty-btn" onclick="increaseQty(this)">+</button>
+                                </div>
+                                <button type="button"
+                                        class="add-to-cart-btn"
+                                        onclick="addToCart(this, {{ product.id }})">
+                                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+                                        <line x1="3" y1="6" x2="21" y2="6"/>
+                                        <path d="M16 10a4 4 0 01-8 0"/>
+                                    </svg>
+                                    Add to Cart
+                                </button>
+                            </div>
+                        {% endif %}
+
+                    </div>
+                </div>
+
+            </div>
+
+        {% else %}
+            <div class="empty-state">
+                <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                    <path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/>
+                    <path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/>
+                </svg>
+                <h3>No Products Available</h3>
+                <p>Check back later for new exciting products!</p>
+            </div>
+        {% endfor %}
+
+    </div>
+</div>
+
+{# ── Toast ── #}
+<div class="toast" id="toastNotif">
+    <svg id="toastIcon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <polyline points="20 6 9 17 4 12"/>
+    </svg>
+    <span id="toastMsg"></span>
+</div>
+
+<script>
+/* ── Add to Cart ── */
+function addToCart(button, productId) {
+    const card     = button.closest('.product-card');
+    const qtyEl    = card ? card.querySelector('.qty-num') : null;
+    const quantity = qtyEl ? parseInt(qtyEl.textContent, 10) : 1;
+
+    fetch(`/cart/add/ajax/${productId}`, {
+        method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: new URLSearchParams({ qty: String(quantity) })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (!data.success) {
+            showToast(data.message || 'Unable to add product to cart.', true);
+            return;
+        }
+        if (typeof window.updateCartBadge === 'function') window.updateCartBadge();
+        showToast(`"${data.name}" added to cart!`);
+    })
+    .catch(err => {
+        console.error('Add To Cart Error:', err);
+        showToast('Unable to add product to cart.', true);
+    });
+}
+
+/* ── Quantity ── */
+function decreaseQty(button) {
+    const picker  = button.closest('.qty-wrap');
+    const valueEl = picker.querySelector('.qty-num');
+    const current = parseInt(valueEl.textContent, 10);
+    if (current > 1) valueEl.textContent = current - 1;
+}
+
+function increaseQty(button) {
+    const picker  = button.closest('.qty-wrap');
+    const valueEl = picker.querySelector('.qty-num');
+    const max     = parseInt(picker.getAttribute('data-stock'), 10);
+    const current = parseInt(valueEl.textContent, 10);
+    if (current < max) valueEl.textContent = current + 1;
+}
+
+/* ── Toast ── */
+let toastTimer = null;
+function showToast(message, isError = false) {
+    const el   = document.getElementById('toastNotif');
+    const icon = document.getElementById('toastIcon');
+    const msg  = document.getElementById('toastMsg');
+
+    msg.textContent = message;
+    el.classList.toggle('error', isError);
+
+    icon.innerHTML = isError
+        ? '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>'
+        : '<polyline points="20 6 9 17 4 12"/>';
+
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+/* ── Search & Filter ── */
+function applyFilter() {
+    const term     = document.getElementById('searchProducts').value.toLowerCase();
+    const category = document.getElementById('categoryFilter').value;
+
+    document.querySelectorAll('.product-card').forEach(card => {
+        const matchName = card.dataset.name.includes(term);
+        const matchCat  = category === 'all' || card.dataset.category === category;
+        card.style.display = (matchName && matchCat) ? '' : 'none';
+    });
+}
+
+document.getElementById('searchProducts').addEventListener('input', applyFilter);
+document.getElementById('categoryFilter').addEventListener('change', applyFilter);
+
+/* Sync with navbar mini search if present */
+document.addEventListener('DOMContentLoaded', function () {
+    const mini = document.getElementById('liveSearchInputMini');
+    const main = document.getElementById('searchProducts');
+    if (mini && main) {
+        mini.addEventListener('input', function () {
+            main.value = this.value;
+            applyFilter();
+        });
+    }
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,271 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Product | JMB Prints{% endblock %}
+
+{% block navbar %}
+    {% include 'navbar.html.twig' %}
+{% endblock %}
+
+{% block body %}
+<style>
+/* ========= PAGE CONTENT (scoped: do not style outer layout <main>) ========= */
+.page-edit-shell {
+    padding: 40px;
+    margin-left: 0 !important;
+    transition: none !important;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ========= FORM CONTAINER ========= */
+.form-container {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* ========= PAGE HEADER ========= */
+.page-header {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    padding: 32px 40px;
+    border-radius: 20px;
+    margin-bottom: 28px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.page-header h1 {
+    font-size: 38px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #007bff 0%, #00c6ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.page-header h1 i {
+    font-size: 36px;
+    background: linear-gradient(135deg, #007bff 0%, #00c6ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* ========= CONTENT CARD ========= */
+.content-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 48px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+/* ========= FORM STYLES ========= */
+.form-group {
+    margin-bottom: 28px;
+}
+
+.form-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    font-size: 16px;
+    color: #2d3748;
+    margin-bottom: 12px;
+}
+
+.form-label i {
+    font-size: 18px;
+}
+
+.form-label i.fa-tag { color: #007bff; }
+.form-label i.fa-align-left { color: #6c757d; }
+.form-label i.fa-money-bill-wave { color: #28a745; }
+.form-label i.fa-image { color: #ffc107; }
+.form-label i.fa-folder { color: #17a2b8; }
+
+.form-control {
+    width: 100%;
+    padding: 16px 20px;
+    border: 2px solid #e2e8f0;
+    border-radius: 14px;
+    font-size: 16px;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.12);
+}
+
+textarea.form-control {
+    resize: vertical;
+    min-height: 120px;
+}
+
+/* ========= BUTTONS ========= */
+.form-actions {
+    display: flex;
+    gap: 16px;
+    margin-top: 40px;
+}
+
+.btn {
+    padding: 16px 36px;
+    border-radius: 14px;
+    font-weight: 600;
+    font-size: 16px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #007bff, #00c6ff);
+    color: white;
+    box-shadow: 0 6px 16px rgba(0, 123, 255, 0.35);
+    flex: 1;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 123, 255, 0.45);
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.95);
+    color: #4a5568;
+    border: 2px solid #e2e8f0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    flex: 1;
+}
+
+.btn-secondary:hover {
+    background: #f8f9fa;
+    border-color: #cbd5e0;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    color: white;
+    box-shadow: 0 6px 16px rgba(220, 53, 69, 0.35);
+    flex: 1;
+}
+
+.btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(220, 53, 69, 0.45);
+}
+
+/* ========= FORM FIELD WRAPPER ========= */
+.form-field {
+    position: relative;
+}
+
+/* ========= RESPONSIVE ========= */
+@media (max-width: 768px) {
+    .page-edit-shell { padding: 24px; }
+    .page-header { padding: 24px; }
+    .page-header h1 { font-size: 28px; }
+    .page-header h1 i { font-size: 26px; }
+    .content-card { padding: 28px; }
+    .form-actions { flex-direction: column; }
+    .btn { width: 100%; }
+}
+</style>
+
+<div class="page-edit-shell">
+    <div class="form-container">
+        <div class="page-header">
+            <h1><i class="fas fa-edit"></i> Edit Product</h1>
+        </div>
+
+        <div class="content-card">
+            {{ form_start(form) }}
+
+                <!-- Product Name -->
+                <div class="form-group">
+                    <label class="form-label"><i class="fas fa-tag"></i> Name</label>
+                    <div class="form-field">
+                        {{ form_widget(form.name, {'attr': {'class': 'form-control', 'placeholder': 'Enter product name'}}) }}
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div class="form-group">
+                    <label class="form-label"><i class="fas fa-align-left"></i> Description</label>
+                    <div class="form-field">
+                        {{ form_widget(form.text, {'attr': {'class': 'form-control', 'rows': '4', 'placeholder': 'Enter product description'}}) }}
+                    </div>
+                </div>
+
+                <!-- Price -->
+                <div class="form-group">
+                    <label class="form-label"><i class="fas fa-money-bill-wave"></i> Price</label>
+                    <div class="form-field">
+                        {{ form_widget(form.price, {'attr': {'class': 'form-control', 'placeholder': 'Enter price'}}) }}
+                    </div>
+                </div>
+
+                <!-- Image URL -->
+                <div class="form-group">
+                    <label class="form-label"><i class="fas fa-image"></i> Image URL</label>
+                    <div class="form-field">
+                        {{ form_widget(form.image, {'attr': {'class': 'form-control', 'placeholder': 'Enter image URL'}}) }}
+                    </div>
+                </div>
+
+                <!-- Category -->
+                <div class="form-group">
+                    <label class="form-label"><i class="fas fa-folder"></i> Category</label>
+                    <div class="form-field">
+                        {{ form_widget(form.category, {'attr': {'class': 'form-control', 'placeholder': 'Select category'}}) }}
+                    </div>
+                </div>
+
+                {# Optional: Stocks #}
+                {% if form.stocks is defined %}
+                <div class="form-group">
+                    <label class="form-label"><i class="fas fa-boxes"></i> Stocks</label>
+                    <div class="form-field">
+                        {{ form_widget(form.stocks, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <a href="{{ path('app_product_index') }}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back to List</a>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Changes</button>
+                </div>
+
+            {{ form_end(form) }}
+
+            {# Delete Form outside the edit form #}
+            <div class="form-actions" style="margin-top: 20px;">
+                {{ include('product/_delete_form.html.twig') }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

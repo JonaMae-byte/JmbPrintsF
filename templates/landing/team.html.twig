@@ -1,0 +1,561 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Team | JMB Prints{% endblock %}
+
+{% block body %}
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --landing-nav-offset: 68px;
+    --black: #05070a;
+    --black-soft: #0a0d12;
+    --blue: #1d6ff2;
+    --blue-bright: #3d8fff;
+    --white: #ffffff;
+    --white-40: rgba(255,255,255,0.40);
+    --border: rgba(255,255,255,0.08);
+  }
+
+  body {
+    font-family: 'Outfit', sans-serif;
+    background: var(--black-soft);
+    color: var(--white);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  .hero-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    padding: 16px 6%;
+    background: rgba(5, 7, 10, 0.88);
+    backdrop-filter: saturate(1.15) blur(14px);
+    -webkit-backdrop-filter: saturate(1.15) blur(14px);
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+  }
+
+  .hero-nav-shell {
+    max-width: 1280px;
+    margin: 0 auto;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+  }
+
+  .hero-brand {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--white);
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+
+  .hero-brand span { color: var(--blue-bright); }
+
+  .hero-links {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .hero-links a {
+    color: rgba(255,255,255,0.7);
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+
+  .hero-links a:hover { color: var(--white); }
+
+  .nav-cta {
+    color: var(--white) !important;
+    background: var(--blue);
+    padding: 8px 18px;
+    border-radius: 3px;
+    font-weight: 600 !important;
+  }
+
+  .team-section {
+    position: relative;
+    padding: calc(var(--landing-nav-offset) + 54px) 6% 0;
+    background: var(--black-soft);
+    overflow: hidden;
+  }
+
+  .team-section::before {
+    content: '';
+    position: absolute;
+    top: var(--landing-nav-offset);
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--blue), transparent);
+  }
+
+  .team-section__inner {
+    position: relative;
+    z-index: 2;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding-bottom: 120px;
+  }
+
+  .section-label {
+    font-size: 12px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--blue-bright);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  .section-label::before {
+    content: '';
+    display: block;
+    width: 24px;
+    height: 1px;
+    background: var(--blue-bright);
+  }
+
+  .team-section__headline {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(52px, 9vw, 110px);
+    font-weight: 700;
+    line-height: 0.95;
+    margin-bottom: 44px;
+    letter-spacing: -1px;
+    position: relative;
+  }
+
+  .team-section__headline::after {
+    content: 'TEAM';
+    position: absolute;
+    left: 2px;
+    top: 2px;
+    color: rgba(61,143,255,0.16);
+    z-index: -1;
+  }
+
+  .team-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 28px;
+  }
+
+  .team-ed-card {
+    position: relative;
+    text-align: center;
+  }
+
+  .team-ed-photo-wrap {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: #0b0f15;
+    cursor: zoom-in;
+    margin-bottom: 16px;
+    position: relative;
+    transition: border-color 0.3s;
+  }
+
+  .team-ed-card:hover .team-ed-photo-wrap {
+    border-color: rgba(29,111,242,0.4);
+  }
+
+  .team-ed-photo-wrap::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0) 35%, rgba(0,0,0,0.45) 100%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+
+  .team-ed-card:hover .team-ed-photo-wrap::after { opacity: 1; }
+
+  .team-ed-photo-wrap::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--blue);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+    z-index: 2;
+  }
+
+  .team-ed-card:hover .team-ed-photo-wrap::before { transform: scaleX(1); }
+
+  .team-ed-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.45s ease, filter 0.45s ease;
+    filter: grayscale(15%) brightness(0.9);
+  }
+
+  .team-ed-card:hover .team-ed-photo {
+    transform: scale(1.06);
+    filter: grayscale(0%) brightness(0.95);
+  }
+
+  .team-ed-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 26px;
+    margin: 0 0 8px;
+  }
+
+  .team-ed-role {
+    margin: 0 0 10px;
+    font-size: 11px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: #9ec2ff;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .team-ed-role-icon {
+    width: 14px;
+    height: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .team-ed-role-icon svg {
+    width: 14px;
+    height: 14px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .team-ed-desc {
+    color: rgba(255,255,255,0.72);
+    font-size: 14px;
+    line-height: 1.65;
+    transition: color 0.3s;
+  }
+
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+
+  [data-reveal].is-visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  .team-ed-card:hover .team-ed-desc { color: rgba(255,255,255,0.88); }
+
+  .team-section__torn {
+    display: block;
+    width: 100%;
+    height: clamp(22px, 4vw, 36px);
+    background: linear-gradient(to right, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.03) 100%);
+    clip-path: polygon(0 34%, 5% 52%, 12% 30%, 20% 52%, 28% 31%, 35% 50%, 43% 33%, 51% 52%, 58% 32%, 66% 50%, 73% 34%, 81% 52%, 88% 31%, 95% 50%, 100% 35%, 100% 100%, 0 100%);
+    opacity: 0.35;
+  }
+
+  .lightbox-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.35s ease, opacity 0.35s ease, backdrop-filter 0.35s ease;
+    backdrop-filter: blur(0px);
+  }
+
+  .lightbox-overlay.active {
+    background: rgba(0,0,0,0.9);
+    opacity: 1;
+    pointer-events: all;
+    backdrop-filter: blur(8px);
+  }
+
+  .lightbox-inner {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    transform: scale(0.93) translateY(16px);
+    opacity: 0;
+    transition: transform 0.35s ease, opacity 0.35s ease;
+    max-width: 90vw;
+  }
+
+  .lightbox-overlay.active .lightbox-inner {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+
+  .lightbox-inner img {
+    width: min(460px, 85vw);
+    height: min(460px, 85vw);
+    object-fit: cover;
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.2);
+    box-shadow: 0 40px 100px rgba(0,0,0,0.8), 0 0 0 1px rgba(29,111,242,0.3);
+  }
+
+  .lightbox-caption { text-align: center; color: #fff; }
+
+  .lightbox-caption strong {
+    display: block;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 24px;
+    margin-bottom: 6px;
+  }
+
+  .lightbox-caption .lb-role {
+    display: block;
+    font-size: 10px;
+    color: var(--blue-bright);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .lightbox-caption .lb-desc {
+    display: block;
+    font-size: 13px;
+    color: var(--white-40);
+    line-height: 1.7;
+    font-weight: 300;
+  }
+
+  .lightbox-close {
+    position: absolute;
+    top: -16px;
+    right: -16px;
+    width: 38px;
+    height: 38px;
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 999px;
+    background: rgba(14, 20, 30, 0.9);
+    color: #fff;
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+    transition: background 0.25s ease, transform 0.25s ease;
+    box-shadow: 0 0 20px rgba(29,111,242,0.5);
+  }
+
+  .lightbox-close:hover {
+    background: var(--blue-bright);
+    transform: rotate(90deg) scale(1.1);
+  }
+
+  @media (max-width: 1024px) {
+    .team-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 768px) {
+    .team-section { padding: calc(var(--landing-nav-offset) + 36px) 5% 0; }
+    .team-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 480px) {
+    .team-grid { grid-template-columns: 1fr; max-width: 300px; margin: 0 auto; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .team-ed-card:hover .team-ed-photo { transform: none; }
+    .lightbox-inner { transition: none; }
+    [data-reveal] {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+</style>
+
+{% include 'landing/_landing_nav.html.twig' %}
+
+<section class="team-section" aria-labelledby="team-heading">
+  <div class="team-section__inner">
+    <div class="section-label" data-reveal>About</div>
+    <h2 class="team-section__headline" id="team-heading" data-reveal style="--reveal-delay: 90ms;">Meet the Team</h2>
+
+    <div class="team-grid">
+      <article class="team-ed-card" data-reveal>
+        <div class="team-ed-photo-wrap"
+             data-name="Jona Mae V. Bohol"
+             data-role="Founder &amp; Creative Director"
+             data-desc="Leads the vision and creative direction of the project."
+             data-src="https://scontent.fmnl8-6.fna.fbcdn.net/v/t39.30808-6/473026037_2176913439391039_650409516219252959_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=53a332&_nc_eui2=AeELmHACIVDByn_xGlhLaKzqE5NTJkuj9rsTk1MmS6P2u1ZDFHXbnShILchJoXB3ZzIypWZGxXhKKRfcIrBgg41D&_nc_ohc=Ap6kJggDqIcQ7kNvwE7dLg1&_nc_oc=Adrj6E3G4vxlaZQgwOF2xyAke5uzIq4em63hmcq8Ms_Ctp84qKmgwCL5Aydx0FcxDbw&_nc_zt=23&_nc_ht=scontent.fmnl8-6.fna&_nc_gid=cr75gIqv8Qiw23kph6aK7g&_nc_ss=7a3a8&oh=00_Af3o1Mz4rIort1XvTKu4TpsUr_hpMtda-epAGz6OzLfVUw&oe=69D37A7D"
+             onclick="openLightbox(this)">
+          <img class="team-ed-photo"
+               src="https://scontent.fmnl8-6.fna.fbcdn.net/v/t39.30808-6/473026037_2176913439391039_650409516219252959_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=53a332&_nc_eui2=AeELmHACIVDByn_xGlhLaKzqE5NTJkuj9rsTk1MmS6P2u1ZDFHXbnShILchJoXB3ZzIypWZGxXhKKRfcIrBgg41D&_nc_ohc=Ap6kJggDqIcQ7kNvwE7dLg1&_nc_oc=Adrj6E3G4vxlaZQgwOF2xyAke5uzIq4em63hmcq8Ms_Ctp84qKmgwCL5Aydx0FcxDbw&_nc_zt=23&_nc_ht=scontent.fmnl8-6.fna&_nc_gid=cr75gIqv8Qiw23kph6aK7g&_nc_ss=7a3a8&oh=00_Af3o1Mz4rIort1XvTKu4TpsUr_hpMtda-epAGz6OzLfVUw&oe=69D37A7D"
+               alt="Portrait of Jona Mae V. Bohol" width="640" height="640" loading="lazy" decoding="async">
+        </div>
+        <h3 class="team-ed-name">Jona Mae V. Bohol</h3>
+        <p class="team-ed-role">
+          <span class="team-ed-role-icon"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>
+          Founder &amp; Creative Director
+        </p>
+        <p class="team-ed-desc">Leads the vision and creative direction of the project.</p>
+      </article>
+
+      <article class="team-ed-card" data-reveal style="--reveal-delay: 80ms;">
+        <div class="team-ed-photo-wrap"
+             data-name="Ken Suson"
+             data-role="Operations Manager"
+             data-desc="Manages daily operations, workflow, and order processes."
+             data-src="https://img.wattpad.com/4fd83cfb70b9656865756ec14a7dc5e873720c4d/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f776174747061642d6d656469612d736572766963652f53746f7279496d6167652f302d766e764336424479455767413d3d2d3932333139323937342e313632333337303132346162663534343236373636383636353737362e706e67?s=fit&w=720&h=720"
+             onclick="openLightbox(this)">
+          <img class="team-ed-photo"
+               src="https://img.wattpad.com/4fd83cfb70b9656865756ec14a7dc5e873720c4d/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f776174747061642d6d656469612d736572766963652f53746f7279496d6167652f302d766e764336424479455767413d3d2d3932333139323937342e313632333337303132346162663534343236373636383636353737362e706e67?s=fit&w=720&h=720"
+               alt="Portrait of Ken Suson" width="640" height="640" loading="lazy" decoding="async">
+        </div>
+        <h3 class="team-ed-name">Ken Suson</h3>
+        <p class="team-ed-role">
+          <span class="team-ed-role-icon"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg></span>
+          Operations Manager
+        </p>
+        <p class="team-ed-desc">Manages daily operations, workflow, and order processes.</p>
+      </article>
+
+      <article class="team-ed-card" data-reveal style="--reveal-delay: 160ms;">
+        <div class="team-ed-photo-wrap"
+             data-name="Stell Ajero"
+             data-role="Lead Designer"
+             data-desc="Designs layouts, tarpaulins, and all visual materials."
+             data-src="https://i1.sndcdn.com/artworks-jXiXCuinFBfkRzQV-iRfmMw-t500x500.jpg"
+             onclick="openLightbox(this)">
+          <img class="team-ed-photo"
+               src="https://i1.sndcdn.com/artworks-jXiXCuinFBfkRzQV-iRfmMw-t500x500.jpg"
+               alt="Portrait of Stell Ajero" width="640" height="640" loading="lazy" decoding="async">
+        </div>
+        <h3 class="team-ed-name">Stell Ajero</h3>
+        <p class="team-ed-role">
+          <span class="team-ed-role-icon"><svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></span>
+          Lead Designer
+        </p>
+        <p class="team-ed-desc">Designs layouts, tarpaulins, and all visual materials.</p>
+      </article>
+
+      <article class="team-ed-card" data-reveal style="--reveal-delay: 240ms;">
+        <div class="team-ed-photo-wrap"
+             data-name="Justin De Dios"
+             data-role="Production Specialist"
+             data-desc="Handles printing operations and ensures quality output."
+             data-src="https://scontent.fmnl8-2.fna.fbcdn.net/v/t39.30808-6/468611579_122151361844290412_7155258307825415963_n.jpg?stp=cp6_dst-jpg_s600x600_tt6&_nc_cat=111&ccb=1-7&_nc_sid=7b2446&_nc_eui2=AeGdwt4pMV_THpf7Cy98aMQBJiflhxA0b-ImJ-WHEDRv4naV3vDjJgm3GQT0_MjGzIj8GkVQUy5lvxHomhewhuwz&_nc_ohc=3h9v5j_8rkcQ7kNvwG9198N&_nc_oc=AdrxQJA1DQtPErdLL6y8U_pqNtg6OcHUvw1CuwaKZ3RbXMmR8RXiN5lit8NfKuygfso&_nc_zt=23&_nc_ht=scontent.fmnl8-2.fna&_nc_gid=hcGT_kdPIlFk-OBCGfCKlw&_nc_ss=7a3a8&oh=00_Af3_vP8O6b5anptVdnaGfVwmCbBYLVTYcQQjMTO86QIkMA&oe=69D3B70E"
+             onclick="openLightbox(this)">
+          <img class="team-ed-photo"
+               src="https://scontent.fmnl8-2.fna.fbcdn.net/v/t39.30808-6/468611579_122151361844290412_7155258307825415963_n.jpg?stp=cp6_dst-jpg_s600x600_tt6&_nc_cat=111&ccb=1-7&_nc_sid=7b2446&_nc_eui2=AeGdwt4pMV_THpf7Cy98aMQBJiflhxA0b-ImJ-WHEDRv4naV3vDjJgm3GQT0_MjGzIj8GkVQUy5lvxHomhewhuwz&_nc_ohc=3h9v5j_8rkcQ7kNvwG9198N&_nc_oc=AdrxQJA1DQtPErdLL6y8U_pqNtg6OcHUvw1CuwaKZ3RbXMmR8RXiN5lit8NfKuygfso&_nc_zt=23&_nc_ht=scontent.fmnl8-2.fna&_nc_gid=hcGT_kdPIlFk-OBCGfCKlw&_nc_ss=7a3a8&oh=00_Af3_vP8O6b5anptVdnaGfVwmCbBYLVTYcQQjMTO86QIkMA&oe=69D3B70E"
+               alt="Portrait of Justin De Dios" width="640" height="640" loading="lazy" decoding="async">
+        </div>
+        <h3 class="team-ed-name">Justin De Dios</h3>
+        <p class="team-ed-role">
+          <span class="team-ed-role-icon"><svg viewBox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg></span>
+          Production Specialist
+        </p>
+        <p class="team-ed-desc">Handles printing operations and ensures quality output.</p>
+      </article>
+    </div>
+  </div>
+
+  <div class="team-section__torn" aria-hidden="true"></div>
+</section>
+
+<div class="lightbox-overlay" id="lightbox" role="dialog" aria-modal="true" aria-label="Team member photo">
+  <div class="lightbox-inner" id="lightbox-inner">
+    <button class="lightbox-close" id="lightbox-close" aria-label="Close">&times;</button>
+    <img id="lightbox-img" src="" alt="">
+    <div class="lightbox-caption">
+      <strong id="lightbox-name"></strong>
+      <span class="lb-role" id="lightbox-role"></span>
+      <span class="lb-desc" id="lightbox-desc"></span>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function () {
+    const revealItems = Array.from(document.querySelectorAll('[data-reveal]'));
+    if (!revealItems.length) return;
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      revealItems.forEach((item) => item.classList.add('is-visible'));
+      return;
+    }
+
+    const revealObserver = new IntersectionObserver((entries, observer) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('is-visible');
+        observer.unobserve(entry.target);
+      });
+    }, { threshold: 0.14, rootMargin: '0px 0px -8% 0px' });
+
+    revealItems.forEach((item) => revealObserver.observe(item));
+  })();
+
+  const overlay = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lightbox-img');
+  const lbName = document.getElementById('lightbox-name');
+  const lbRole = document.getElementById('lightbox-role');
+  const lbDesc = document.getElementById('lightbox-desc');
+  const lbClose = document.getElementById('lightbox-close');
+
+  function openLightbox(el) {
+    lbImg.src = el.dataset.src;
+    lbImg.alt = 'Portrait of ' + el.dataset.name;
+    lbName.textContent = el.dataset.name;
+    lbRole.textContent = el.dataset.role;
+    lbDesc.textContent = el.dataset.desc || '';
+    overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    lbClose.focus();
+  }
+
+  function closeLightbox() {
+    overlay.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  lbClose.addEventListener('click', closeLightbox);
+  overlay.addEventListener('click', function (e) { if (e.target === overlay) closeLightbox(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeLightbox(); });
+</script>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="container py-4">
+
+    <h2 class="fw-bold mb-4">Your Cart</h2>
+
+    {% if items is empty %}
+        <p>No items in cart.</p>
+        <a href="{{ path('ordering_index') }}" class="btn btn-primary">Back to products</a>
+    {% else %}
+        <form action="{{ path('ordering_cart_update') }}" method="post">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th width="120">Price</th>
+                        <th width="120">Qty</th>
+                        <th width="120">Subtotal</th>
+                        <th width="80">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                        <tr>
+                            <td>{{ item.product.name }}</td>
+                            <td>₱{{ item.product.price }}</td>
+                            <td>
+                                <input type="number" name="qty[{{ item.product.id }}]" 
+                                       value="{{ item.qty }}" class="form-control">
+                            </td>
+                            <td>₱{{ item.subtotal }}</td>
+                            <td>
+                                <a href="{{ path('ordering_cart_remove', {id: item.product.id}) }}" 
+                                   class="btn btn-danger btn-sm">X</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <h4 class="text-end">TOTAL: ₱{{ total }}</h4>
+
+            <div class="d-flex justify-content-between mt-3">
+                <a href="{{ path('ordering_index') }}" class="btn btn-secondary">Continue Shopping</a>
+
+                <button type="submit" class="btn btn-warning">Update Cart</button>
+
+                <form action="{{ path('ordering_checkout') }}" method="post" class="d-inline">
+                    <button type="submit" class="btn btn-success">Checkout</button>
+                </form>
+            </div>
+        </form>
+    {% endif %}
+</div>
+{% endblock %}

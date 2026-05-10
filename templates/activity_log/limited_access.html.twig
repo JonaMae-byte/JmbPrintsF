@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Access Restricted{% endblock %}
+
+{% block body %}
+<div style="padding: 30px; text-align: center;">
+    <h2 style="color: red;">⚠ Limited Access</h2>
+    <p>You do not have permission to view this page.</p>
+    <p>Please contact the administrator if you believe this is a mistake.</p>
+
+    <a href="{{ path('app_dashboard') }}" class="btn btn-primary mt-3">Go Back</a>
+</div>
+{% endblock %}

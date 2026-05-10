@@ -1,0 +1,385 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Customers | JMB Prints{% endblock %}
+
+{% block body %}
+<style>
+
+
+/* ========= CUSTOMERS CONTAINER ========= */
+.customers-container {
+    padding: 32px;
+    padding-top: 110px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* ========= HEADER SECTION ========= */
+.customers-header {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    padding: 24px 32px;
+    border-radius: 16px;
+    margin-bottom: 32px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.customers-header h1 {
+    font-size: 32px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #005b96 0%, #007bff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0 0 8px 0;
+}
+
+.customers-header p {
+    color: #718096;
+    font-size: 16px;
+    margin: 0;
+}
+
+/* ========= SEARCH & FILTER BAR ========= */
+.filter-section {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    padding: 24px;
+    border-radius: 16px;
+    margin-bottom: 32px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    display: flex;
+    gap: 16px;
+    align-items: center;
+}
+
+.search-wrapper {
+    position: relative;
+    flex: 1;
+}
+
+.search-input {
+    width: 100%;
+    padding: 14px 20px 14px 50px;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 15px;
+    outline: none;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.search-input:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.1);
+}
+
+.search-icon {
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #718096;
+    font-size: 18px;
+}
+
+/* ========= TABLE CONTAINER ========= */
+.table-container {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+/* ========= TABLE HEADER ========= */
+thead {
+    background: linear-gradient(135deg, #005b96 0%, #007bff 100%);
+}
+
+thead th {
+    color: white;
+    font-weight: 600;
+    text-align: left;
+    padding: 16px 20px;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* ========= TABLE BODY ========= */
+tbody tr {
+    border-bottom: 1px solid #e2e8f0;
+    transition: all 0.2s ease;
+}
+
+tbody tr:hover {
+    background: #f8f9fa;
+}
+
+tbody tr:last-child {
+    border-bottom: none;
+}
+
+td {
+    padding: 20px;
+    color: #4a5568;
+    font-size: 15px;
+    vertical-align: middle;
+}
+
+td:first-child {
+    font-weight: 700;
+    color: #005b96;
+}
+
+.username-cell {
+    font-weight: 600;
+    color: #2d3748;
+}
+
+.total-orders {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    display: inline-block;
+    box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+}
+
+.total-spent {
+    font-size: 16px;
+    font-weight: 700;
+    color: #28a745;
+}
+
+.no-orders {
+    color: #cbd5e0;
+    font-style: italic;
+    font-size: 14px;
+}
+
+/* ========= ACTION BUTTONS ========= */
+.actions-cell {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.btn-delete {
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: none;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+
+
+.btn-delete {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    color: white;
+    box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+}
+
+.btn-delete:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
+}
+
+form {
+    display: inline-block;
+    margin: 0;
+}
+
+/* ========= EMPTY STATE ========= */
+.empty-state {
+    text-align: center;
+    padding: 80px 20px;
+}
+
+.empty-state i {
+    font-size: 80px;
+    color: #cbd5e0;
+    margin-bottom: 24px;
+}
+
+.empty-state h3 {
+    color: #4a5568;
+    margin-bottom: 12px;
+    font-size: 24px;
+}
+
+.empty-state p {
+    color: #718096;
+    font-size: 16px;
+}
+
+/* ========= RESPONSIVE ========= */
+@media (max-width: 992px) {
+    .customers-container {
+        padding: 20px;
+        padding-top: 90px;
+    }
+
+    .customers-header {
+        padding: 20px;
+    }
+
+    .customers-header h1 {
+        font-size: 24px;
+    }
+
+    .table-container {
+        overflow-x: auto;
+    }
+
+    table {
+        min-width: 800px;
+    }
+
+    .profile-name span {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    
+
+    .customers-header h1 {
+        font-size: 20px;
+    }
+
+    td, thead th {
+        padding: 12px;
+        font-size: 14px;
+    }
+
+    .btn-delete {
+        padding: 6px 12px;
+        font-size: 13px;
+    }
+
+    .actions-cell {
+        flex-direction: column;
+        gap: 6px;
+    }
+}
+</style>
+
+<div class="customers-container">
+    <!-- HEADER SECTION -->
+    <div class="customers-header">
+        <h1>👥 Customer Management</h1>
+        <p>View and manage all registered customers and their order history</p>
+    </div>
+
+    <!-- SEARCH & FILTER -->
+    <div class="filter-section">
+        <div class="search-wrapper">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" id="searchCustomers" class="search-input" placeholder="Search customers by username...">
+        </div>
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Total Orders</th>
+                    <th>Total Spent</th>
+                    <th>Last Order</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody id="customersTableBody">
+                {% for row in rows %}
+                    <tr data-username="{{ row.user.username|lower }}">
+                        <td>{{ row.user.id }}</td>
+                        <td class="username-cell">{{ row.user.username }}</td>
+                        <td>
+                            <span class="total-orders">{{ row.totalOrders }} orders</span>
+                        </td>
+                        <td class="total-spent">₱{{ row.totalSpent|number_format(2) }}</td>
+                        <td>
+                            {% if row.lastOrderDate %}
+                                {{ row.lastOrderDate|date('M d, Y H:i') }}
+                            {% else %}
+                                <span class="no-orders">No orders yet</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="actions-cell">
+                              
+                                <form method="POST" action="{{ path('customer_delete', { id: row.user.id }) }}">
+                                    <button type="submit" onclick="return confirm('Delete this customer?')" class="btn-delete">
+                                        <i class="fas fa-trash"></i>
+                                        Delete
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="6">
+                            <div class="empty-state">
+                                <i class="fas fa-users-slash"></i>
+                                <h3>No Customers Yet</h3>
+                                <p>Customer data will appear here once users register</p>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+// Search functionality
+document.getElementById("searchCustomers").addEventListener("keyup", function() {
+    const searchTerm = this.value.toLowerCase();
+    const rows = document.querySelectorAll("#customersTableBody tr[data-username]");
+
+    rows.forEach(row => {
+        const username = row.getAttribute("data-username");
+        row.style.display = username.includes(searchTerm) ? "" : "none";
+    });
+});
+</script>
+
+{% endblock %}

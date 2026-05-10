@@ -1,0 +1,177 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit profile | JMB Prints{% endblock %}
+
+{% block navbar %}
+    {% include 'profile/_profile_navbar.html.twig' %}
+{% endblock %}
+
+{% block body %}
+{% if not is_granted('ROLE_ADMIN') and not is_granted('ROLE_STAFF') %}
+<style>.profile-edit-wrap { padding-top: 96px; }</style>
+{% endif %}
+<style>
+.profile-edit-wrap {
+    font-family: "Poppins", "Inter", sans-serif;
+    background: linear-gradient(135deg, #e3f2fd 0%, #f5f6fa 100%);
+    padding: 30px 20px;
+    min-height: calc(100vh - 80px);
+    box-sizing: border-box;
+}
+.profile-edit-card {
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 8px 30px rgba(0, 123, 255, 0.12);
+    border: 1px solid rgba(0, 123, 255, 0.1);
+    max-width: 520px;
+    margin: 0 auto;
+    overflow: hidden;
+}
+.profile-edit-card__header {
+    padding: 28px 32px 20px;
+    border-bottom: 1px solid #e8f1fc;
+    background: linear-gradient(135deg, #f0f7ff 0%, #ffffff 100%);
+}
+.profile-edit-card__header h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #007bff;
+    margin: 0 0 6px;
+}
+.profile-edit-card__header p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+.profile-edit-card__body {
+    padding: 28px 32px 32px;
+}
+.profile-edit-form .form-row {
+    margin-bottom: 1.15rem;
+}
+.profile-edit-form label {
+    display: block;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #6c757d;
+    font-weight: 600;
+    margin-bottom: 0.35rem;
+}
+.profile-edit-form input[type="text"],
+.profile-edit-form input[type="email"],
+.profile-edit-form input[type="password"] {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 10px 14px;
+    border: 1px solid #d0dbe8;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-family: inherit;
+}
+.profile-edit-form input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+}
+.profile-edit-form .form-error,
+.profile-edit-form ul li {
+    color: #c0392b;
+    font-size: 0.85rem;
+    margin-top: 0.35rem;
+}
+.profile-edit-form ul {
+    margin: 0.35rem 0 0;
+    padding-left: 1.1rem;
+}
+.profile-edit-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid #e8f1fc;
+}
+.profile-edit-actions .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 10px 20px;
+    border-radius: 12px;
+    border: none;
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    color: #fff;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+}
+.profile-edit-actions .btn-primary:hover {
+    filter: brightness(1.05);
+}
+.profile-edit-actions .btn-link {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 16px;
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+.profile-edit-actions .btn-link:hover {
+    text-decoration: underline;
+}
+.profile-edit-hint {
+    font-size: 0.82rem;
+    color: #6c757d;
+    margin-top: 0.35rem;
+}
+</style>
+
+<div class="profile-edit-wrap">
+    <div class="profile-edit-card">
+        <div class="profile-edit-card__header">
+            <h1>Edit profile</h1>
+            <p>Update your name, email, or password. Leave password fields empty to keep your current password.</p>
+        </div>
+        <div class="profile-edit-card__body">
+            {{ form_start(form, { attr: { novalidate: 'novalidate' } }) }}
+                {{ form_errors(form) }}
+
+                <div class="form-row">
+                    {{ form_label(form.username) }}
+                    {{ form_widget(form.username) }}
+                    {{ form_errors(form.username) }}
+                </div>
+
+                <div class="form-row">
+                    {{ form_label(form.email) }}
+                    {{ form_widget(form.email) }}
+                    {{ form_errors(form.email) }}
+                </div>
+
+                <div class="form-row">
+                    {{ form_label(form.plainPassword.first) }}
+                    {{ form_widget(form.plainPassword.first) }}
+                    {{ form_errors(form.plainPassword.first) }}
+                </div>
+                <div class="form-row">
+                    {{ form_label(form.plainPassword.second) }}
+                    {{ form_widget(form.plainPassword.second) }}
+                    {{ form_errors(form.plainPassword.second) }}
+                </div>
+                <p class="profile-edit-hint">Password is optional. Use at least 6 characters when changing it.</p>
+
+                <div class="profile-edit-actions">
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-save" aria-hidden="true"></i>
+                        Save changes
+                    </button>
+                    <a href="{{ path('app_profile') }}" class="btn-link">Cancel</a>
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>
+{% endblock %}

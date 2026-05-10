@@ -1,0 +1,5 @@
+{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_STAFF') %}
+    {% include 'navbar.html.twig' %}
+{% else %}
+    {% include 'components/_navbar_shop.html.twig' %}
+{% endif %}

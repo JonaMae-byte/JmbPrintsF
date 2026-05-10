@@ -1,0 +1,16 @@
+api_platform:
+    title: Shop API
+    version: 1.0.0
+    defaults:
+        stateless: true
+        cache_headers:
+            vary: ['Content-Type', 'Authorization', 'Origin']
+    swagger:
+        http_auth:
+            JWT:
+                scheme: bearer
+                bearerFormat: JWT
+    formats:
+        jsonld: ['application/ld+json']
+        json: ['application/json']
+        jsonpatch: ['application/merge-patch+json', 'application/json']

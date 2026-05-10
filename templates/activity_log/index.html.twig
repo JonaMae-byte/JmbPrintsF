@@ -1,0 +1,288 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Activity Log{% endblock %}
+
+{% block body %}
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+.activity-log-page {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #e3f2fd 0%, #f5f6fa 100%);
+    padding: 30px 40px;
+    min-height: 100vh;
+}
+
+/* Header */
+.header {
+    max-width: 1630px;
+    margin: 0 auto 30px;
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    padding: 25px 40px;
+    border-radius: 16px;
+    color: white;
+    box-shadow: 0 8px 24px rgba(0, 123, 255, 0.25);
+}
+
+.header h2 {
+    font-size: 32px;
+    font-weight: 700;
+    color: white;
+    margin: 0;
+    letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.header h2::before {
+    content: '📋';
+    font-size: 36px;
+}
+
+/* Card Container */
+.card {
+    background: white;
+    border-radius: 20px;
+    max-width: 1630px;
+    margin: 0 auto;
+    padding: 30px;
+    box-shadow: 0 8px 30px rgba(0, 123, 255, 0.08);
+    border: 1px solid rgba(0, 123, 255, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 40px rgba(0, 123, 255, 0.15);
+}
+
+/* Table Wrapper */
+.table-wrapper {
+    overflow-x: auto;
+    border-radius: 12px;
+}
+
+/* Table Styles */
+.table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    min-width: 700px;
+}
+
+.table thead {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+}
+
+.table th {
+    color: white;
+    padding: 16px 18px;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: none;
+}
+
+.table th:first-child {
+    border-radius: 10px 0 0 0;
+}
+
+.table th:last-child {
+    border-radius: 0 10px 0 0;
+}
+
+.table td {
+    padding: 14px 18px;
+    text-align: left;
+    vertical-align: middle;
+    font-size: 14px;
+    color: #1f2937 !important;
+    border-bottom: 1px solid #e8f1fc;
+    background-color: white;
+}
+
+/* Keep USER column readable over global table styles */
+.table td:nth-child(2) {
+    color: #0f172a !important;
+    font-weight: 600;
+}
+
+/* Make Details column more readable */
+.table td:nth-child(4) {
+    color: #0f172a !important;
+    font-weight: 500;
+}
+
+.badge {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.badge-action-login {
+    background: #dcfce7;
+    color: #166534;
+    border: 1px solid #86efac;
+}
+
+.badge-action-logout {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fca5a5;
+}
+
+.badge-action-default {
+    background: #e0f2fe;
+    color: #075985;
+    border: 1px solid #7dd3fc;
+}
+
+.badge-role-admin {
+    background: #ede9fe;
+    color: #5b21b6;
+    border: 1px solid #c4b5fd;
+}
+
+.badge-role-staff {
+    background: #fef3c7;
+    color: #92400e;
+    border: 1px solid #fcd34d;
+}
+
+.badge-role-default {
+    background: #e5e7eb;
+    color: #374151;
+    border: 1px solid #d1d5db;
+}
+
+.table tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+.table tbody tr:hover {
+    background-color: #f0f7ff;
+}
+
+.table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.table tbody tr:last-child td:first-child {
+    border-radius: 0 0 0 10px;
+}
+
+.table tbody tr:last-child td:last-child {
+    border-radius: 0 0 10px 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .activity-log-page {
+        padding: 20px;
+    }
+    
+    .header {
+        padding: 20px 25px;
+        border-radius: 12px;
+    }
+    
+    .header h2 {
+        font-size: 24px;
+    }
+    
+    .card {
+        padding: 20px;
+        border-radius: 12px;
+    }
+    
+    .table th,
+    .table td {
+        font-size: 12px;
+        padding: 10px 12px;
+    }
+}
+</style>
+
+<div class="activity-log-page">
+    <div class="header">
+        <h2>Activity Log</h2>
+    </div>
+
+    <div class="card">
+        <div class="table-wrapper">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Action</th>
+                        <th>User</th>
+                        <th>Role</th>
+                        <th>Details</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+
+                <tbody id="logs-table">
+                    <!-- Real-time data appears here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+function actionBadge(action) {
+    const a = (action || '').toLowerCase();
+    if (a === 'login') {
+        return '<span class="badge badge-action-login">Login</span>';
+    }
+    if (a === 'logout') {
+        return '<span class="badge badge-action-logout">Logout</span>';
+    }
+    return `<span class="badge badge-action-default">${action ?? 'Action'}</span>`;
+}
+
+function roleBadge(role) {
+    const r = (role || '').toLowerCase();
+    if (r === 'admin') {
+        return '<span class="badge badge-role-admin">Admin</span>';
+    }
+    if (r === 'staff') {
+        return '<span class="badge badge-role-staff">Staff</span>';
+    }
+    return `<span class="badge badge-role-default">${role ?? 'Unknown'}</span>`;
+}
+
+function loadActivityLogs() {
+    fetch("{{ path('app_activity_log_data') }}")
+        .then(response => response.json())
+        .then(data => {
+
+            let tbody = document.getElementById('logs-table');
+            tbody.innerHTML = "";
+
+            data.forEach(log => {
+                let row = `
+                    <tr>
+                        <td>${actionBadge(log.action)}</td>
+                        <td>${log.user}</td>
+                        <td>${roleBadge(log.role)}</td>
+                        <td>${log.details ?? ''}</td>
+                        <td>${log.createdAt}</td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        });
+}
+
+loadActivityLogs();
+setInterval(loadActivityLogs, 3000);
+</script>
+{% endblock %}

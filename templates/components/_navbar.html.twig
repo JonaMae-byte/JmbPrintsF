@@ -1,0 +1,225 @@
+{#
+  Reusable top navbar — include from base or any template:
+
+    {% include 'components/_navbar.html.twig' %}
+
+  Optional variables when including:
+    - navbar_search_href: URL opened by the search control (default: '#')
+    - navbar_search_label: Accessible label (default: 'Search')
+    - navbar_page_search_enabled: if true, show in-page search (input + button + results)
+    - navbar_page_search_root: CSS selector for the searchable region (e.g. '#dashboard-page-search-root')
+    - navbar_page_search_item: selector for each searchable unit (default '[data-page-search-item]')
+
+  Profile block is shown when navbar_show_profile() is true (any logged-in user).
+#}
+{% set _navbar_home_href = is_granted('ROLE_ADMIN')
+    ? path('app_dashboard')
+    : (is_granted('ROLE_STAFF') ? path('app_staff_dashboard') : path('app_ordering')) %}
+{% set _notifications_enabled = navbar_notifications_enabled|default(false) %}
+{% set _notifications_count = navbar_notifications_count|default(0) %}
+{% set _notifications = navbar_notifications|default([]) %}
+
+<header class="app-navbar" role="banner">
+    <div class="app-navbar__inner">
+        <a href="{{ _navbar_home_href }}" class="app-navbar__brand">
+            <img src="{{ asset('SADlogo.png') }}" alt="" class="app-navbar__logo" width="36" height="36" loading="lazy">
+            <span class="app-navbar__title">JMB Prints</span>
+        </a>
+
+        <div class="app-navbar__actions">
+            {% if _notifications_enabled %}
+                <div class="notification-wrap">
+                    <button type="button" class="notification-btn" id="notificationBtn" aria-label="Notifications" aria-haspopup="true" aria-expanded="false" aria-controls="notificationPanel">🔔</button>
+                    <span class="notification-badge" id="notificationBadge">{{ _notifications_count }}</span>
+                    <div class="notification-panel" id="notificationPanel">
+                        <div class="notification-filters" id="notificationFilters">
+                            <button type="button" class="notification-filter-btn active" data-filter="all">All</button>
+                            <button type="button" class="notification-filter-btn" data-filter="order">Orders</button>
+                            <button type="button" class="notification-filter-btn" data-filter="stock_low">Low Stock</button>
+                            <button type="button" class="notification-filter-btn" data-filter="stock_out">Out of Stock</button>
+                        </div>
+                        <div id="notificationList">
+                            {% for n in _notifications %}
+                                <div class="notification-item {{ n.severity|default('info') }}">
+                                    <h6>{{ n.title }}</h6>
+                                    <p>{{ n.message }}</p>
+                                    <div class="notification-time">{{ n.timestamp }}</div>
+                                </div>
+                            {% else %}
+                                <div class="notification-item info">
+                                    <h6>No notifications</h6>
+                                    <p>Everything looks good right now.</p>
+                                    <div class="notification-time">Just now</div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if navbar_show_profile() %}
+                <div class="app-navbar__profile">
+                    <button type="button" class="app-navbar__btn app-navbar__btn--profile" id="app-navbar-profile-trigger" aria-expanded="false" aria-haspopup="true" aria-controls="app-navbar-profile-menu">
+                        <i class="fas fa-user-circle" aria-hidden="true"></i>
+                        <span class="app-navbar__btn-text">{{ app.user ? app.user.userIdentifier : 'Account' }}</span>
+                        <i class="fas fa-chevron-down app-navbar__chevron" aria-hidden="true"></i>
+                    </button>
+                    <div class="app-navbar__dropdown" id="app-navbar-profile-menu" hidden>
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <a href="{{ path('app_dashboard') }}" class="app-navbar__dropdown-link">
+                                <i class="fas fa-home" aria-hidden="true"></i> Dashboard
+                            </a>
+                        {% elseif is_granted('ROLE_STAFF') %}
+                            <a href="{{ path('app_staff_dashboard') }}" class="app-navbar__dropdown-link">
+                                <i class="fas fa-home" aria-hidden="true"></i> Dashboard
+                            </a>
+                        {% endif %}
+                        <a href="{{ path('app_profile') }}" class="app-navbar__dropdown-link">
+                            <i class="fas fa-user" aria-hidden="true"></i> Profile
+                        </a>
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <a href="{{ path('app_settings') }}" class="app-navbar__dropdown-link">
+                                <i class="fas fa-cog" aria-hidden="true"></i> Settings
+                            </a>
+                            <a href="{{ path('user_management_index') }}" class="app-navbar__dropdown-link">
+                                <i class="fas fa-users-cog" aria-hidden="true"></i> User management
+                            </a>
+                        {% endif %}
+                        <div class="app-navbar__dropdown-sep" role="separator"></div>
+                        <a href="{{ path('app_logout') }}" class="app-navbar__dropdown-link app-navbar__dropdown-link--danger">
+                            <i class="fas fa-sign-out-alt" aria-hidden="true"></i> Logout
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</header>
+
+<script>
+(function () {
+    var notificationBtn = document.getElementById('notificationBtn');
+    var notificationPanel = document.getElementById('notificationPanel');
+    var notificationFilters = document.getElementById('notificationFilters');
+    var notificationList = document.getElementById('notificationList');
+    var notificationBadge = document.getElementById('notificationBadge');
+    if (!notificationBtn || !notificationPanel || !notificationFilters || !notificationList || !notificationBadge) return;
+    if (notificationBtn.dataset.navbarNotificationsInit === '1') return;
+    notificationBtn.dataset.navbarNotificationsInit = '1';
+
+    var allNotifications = [];
+    var activeNotificationFilter = 'all';
+
+    function escapeHtml(text) {
+        return String(text || '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    function renderNotifications(notifications) {
+        allNotifications = Array.isArray(notifications) ? notifications : [];
+        var filtered = allNotifications;
+        if (activeNotificationFilter !== 'all') {
+            filtered = allNotifications.filter(function (n) {
+                return (n.type || '') === activeNotificationFilter;
+            });
+        }
+
+        notificationBadge.textContent = String(allNotifications.length);
+        notificationBadge.style.display = allNotifications.length > 0 ? 'flex' : 'none';
+
+        if (filtered.length === 0) {
+            notificationList.innerHTML = '<div class="notification-item info"><h6>No notifications</h6><p>Everything looks good right now.</p><div class="notification-time">Just now</div></div>';
+            return;
+        }
+
+        notificationList.innerHTML = filtered.map(function (n) {
+            return '<div class="notification-item ' + escapeHtml(n.severity || 'info') + '"><h6>' + escapeHtml(n.title || 'Notification') + '</h6><p>' + escapeHtml(n.message || '') + '</p><div class="notification-time">' + escapeHtml(n.timestamp || 'Now') + '</div></div>';
+        }).join('');
+    }
+
+    function setFilter(filterType) {
+        activeNotificationFilter = filterType;
+        notificationFilters.querySelectorAll('.notification-filter-btn').forEach(function (btn) {
+            btn.classList.toggle('active', btn.getAttribute('data-filter') === filterType);
+        });
+        renderNotifications(allNotifications);
+    }
+
+    function fetchNotifications() {
+        fetch('{{ path('app_dashboard_stats') }}', { cache: 'no-store' })
+            .then(function (res) { return res.ok ? res.json() : null; })
+            .then(function (data) {
+                if (!data || !Array.isArray(data.notifications)) return;
+                renderNotifications(data.notifications);
+            })
+            .catch(function () {});
+    }
+
+    notificationBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        notificationPanel.classList.toggle('open');
+        notificationBtn.setAttribute('aria-expanded', notificationPanel.classList.contains('open') ? 'true' : 'false');
+    });
+
+    notificationFilters.addEventListener('click', function (e) {
+        var btn = e.target.closest('.notification-filter-btn');
+        if (!btn) return;
+        setFilter(btn.getAttribute('data-filter') || 'all');
+    });
+
+    document.addEventListener('click', function (e) {
+        if (!e.target.closest('.notification-wrap')) {
+            notificationPanel.classList.remove('open');
+            notificationBtn.setAttribute('aria-expanded', 'false');
+        }
+    });
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            notificationPanel.classList.remove('open');
+            notificationBtn.setAttribute('aria-expanded', 'false');
+        }
+    });
+
+    fetchNotifications();
+    setInterval(fetchNotifications, 30000);
+})();
+
+(function () {
+    var trigger = document.getElementById('app-navbar-profile-trigger');
+    var menu = document.getElementById('app-navbar-profile-menu');
+    if (!trigger || !menu) return;
+
+    function closeMenu() {
+        menu.hidden = true;
+        trigger.setAttribute('aria-expanded', 'false');
+    }
+
+    function toggleMenu() {
+        var shouldOpen = menu.hidden;
+        menu.hidden = !shouldOpen;
+        trigger.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
+    }
+
+    trigger.addEventListener('click', function (e) {
+        e.stopPropagation();
+        toggleMenu();
+    });
+
+    document.addEventListener('click', function () {
+        closeMenu();
+    });
+
+    menu.addEventListener('click', function (e) {
+        e.stopPropagation();
+    });
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') closeMenu();
+    });
+})();
+</script>

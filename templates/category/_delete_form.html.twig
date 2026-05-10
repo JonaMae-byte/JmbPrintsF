@@ -1,0 +1,37 @@
+{# templates/category/_delete_form.html.twig #}
+{% if is_granted('ROLE_ADMIN') %}
+<form method="post"
+      action="{{ path('app_category_delete', {'id': category.id}) }}"
+      onsubmit="return confirm('Sigurado ka ba nga gusto nimo i-delete kini nga category?');"
+      style="display: inline-block;">
+
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ category.id) }}">
+
+    <button class="btn btn-delete">
+        🗑 Delete
+    </button>
+</form>
+{% endif %}
+
+<style>
+.btn-delete {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 8px rgba(220, 53, 69, 0.3);
+}
+.btn-delete:hover {
+    background: #c82333;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 12px rgba(220, 53, 69, 0.4);
+}
+.btn-delete:active {
+    transform: translateY(0);
+}
+</style>

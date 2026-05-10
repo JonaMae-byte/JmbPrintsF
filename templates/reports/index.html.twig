@@ -1,0 +1,324 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Transaction Reports{% endblock %}
+
+{% block body %}
+<style>
+main {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #e3f2fd 0%, #f7f9fc 100%);
+    padding: 30px 50px;
+    min-height: 100vh;
+}
+
+/* ========= HEADER / NAVBAR ========= */
+.header {
+    display: flex;
+    max-width: 1630px;
+    margin: 0 auto 30px;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    padding: 25px 40px;
+    border-radius: 16px;
+    color: white;
+    box-shadow: 0 8px 24px rgba(0, 123, 255, 0.25);
+}
+
+.header h1 {
+    font-size: 32px;
+    font-weight: 700;
+    color: white;
+    margin: 0;
+    letter-spacing: -0.5px;
+}
+
+.header-subtitle {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.85);
+    margin-top: 5px;
+}
+
+/* Card for each table */
+.card {
+    background: #fff;
+    border-radius: 16px;
+    max-width: 1630px;
+    margin: 0 auto 30px;
+    padding: 30px;
+    box-shadow: 0 6px 30px rgba(0, 123, 255, 0.08);
+    border: 1px solid rgba(0, 123, 255, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 40px rgba(0, 123, 255, 0.15);
+}
+
+/* Section Titles */
+.card h2 {
+    color: #007bff;
+    margin: 0 0 20px 0;
+    font-size: 22px;
+    font-weight: 600;
+    padding-bottom: 15px;
+    border-bottom: 3px solid #007bff;
+    display: inline-block;
+}
+
+/* Table Wrapper for Scroll on small screens */
+.table-wrapper { 
+    overflow-x: auto; 
+    border-radius: 12px;
+    margin-top: 20px;
+}
+
+/* Table Styles */
+table.reports-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    min-width: 700px;
+}
+
+table.reports-table th {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    color: #fff;
+    text-transform: uppercase;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+    padding: 16px 18px;
+    text-align: left;
+    border: none;
+}
+
+table.reports-table th:first-child {
+    border-radius: 10px 0 0 0;
+}
+
+table.reports-table th:last-child {
+    border-radius: 0 10px 0 0;
+}
+
+table.reports-table td {
+    padding: 14px 18px;
+    text-align: left;
+    vertical-align: middle;
+    font-size: 14px;
+    color: #555;
+    border-bottom: 1px solid #e8f1fc;
+    background-color: #fff;
+}
+
+table.reports-table tr:hover td {
+    background-color: #f0f7ff;
+    transition: background-color 0.2s ease;
+}
+
+table.reports-table tr:last-child td:first-child {
+    border-radius: 0 0 0 10px;
+}
+
+table.reports-table tr:last-child td:last-child {
+    border-radius: 0 0 10px 0;
+}
+
+/* Status/Notes Badge */
+table.reports-table td span {
+    display: inline-block;
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.2);
+}
+
+/* Status Colors */
+.status-pending {
+    background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%) !important;
+    box-shadow: 0 2px 8px rgba(255, 193, 7, 0.3) !important;
+}
+
+.status-progress {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%) !important;
+    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3) !important;
+}
+
+.status-completed {
+    background: linear-gradient(135deg, #28a745 0%, #20923b 100%) !important;
+    box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3) !important;
+}
+
+/* Rating Stars */
+.rating {
+    color: #007bff;
+    font-weight: 600;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #6c757d;
+    font-size: 15px;
+}
+
+/* Responsive */
+@media screen and (max-width: 768px) {
+    main { padding: 20px; }
+    .header { 
+        padding: 20px 25px; 
+        border-radius: 12px;
+    }
+    .header h1 { font-size: 24px; }
+    .card { 
+        padding: 20px; 
+        border-radius: 12px;
+    }
+    .card h2 { font-size: 18px; }
+    table.reports-table th, 
+    table.reports-table td { 
+        font-size: 12px; 
+        padding: 10px 12px; 
+    }
+}
+</style>
+
+<main>
+    <div class="header">
+        <div>
+            <h1>Transaction Reports</h1>
+            <div class="header-subtitle">Comprehensive overview of all transactions</div>
+        </div>
+    </div>
+
+    <div class="example-wrapper">
+
+        <!-- Stock Transactions -->
+        <div class="card">
+            <h2>Stock Transactions</h2>
+            <div class="table-wrapper">
+                {% if reports is empty %}
+                    <p class="empty-state">No transaction reports found.</p>
+                {% else %}
+                    <table class="reports-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Stock</th>
+                                <th>Action</th>
+                                <th>Quantity</th>
+                                <th>Changed By</th>
+                                <th>Date</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for report in reports %}
+                                <tr>
+                                    <td>{{ report.id }}</td>
+                                    <td>{{ report.stock is not null ? report.stock : 'N/A' }}</td>
+                                    <td>{{ report.actionType }}</td>
+                                    <td>{{ report.quantity }}</td>
+                                    <td>{{ report.changedBy }}</td>
+                                    <td>{{ report.transactionDate ? report.transactionDate|date('Y-m-d H:i') : 'N/A' }}</td>
+                                    <td>{% if report.notes %}<span>{{ report.notes }}</span>{% else %}-{% endif %}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Printing Schedule -->
+        {% set printingSchedules = [
+            {'id': 1, 'order': 'Summer T-Shirt', 'date': '2025-10-20 10:00', 'status': 'Pending'},
+            {'id': 2, 'order': 'Coffee Mug', 'date': '2025-10-21 14:00', 'status': 'In Progress'},
+            {'id': 3, 'order': 'Cap', 'date': '2025-10-22 09:30', 'status': 'Completed'}
+        ] %}
+
+        <div class="card">
+            <h2>Printing Schedule</h2>
+            <div class="table-wrapper">
+                {% if printingSchedules is empty %}
+                    <p class="empty-state">No printing schedules found.</p>
+                {% else %}
+                    <table class="reports-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Order</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for schedule in printingSchedules %}
+                                <tr>
+                                    <td>{{ schedule.id }}</td>
+                                    <td>{{ schedule.order }}</td>
+                                    <td>{{ schedule.date }}</td>
+                                    <td>
+                                        <span class="
+                                            {% if schedule.status == 'Pending' %}status-pending
+                                            {% elseif schedule.status == 'In Progress' %}status-progress
+                                            {% elseif schedule.status == 'Completed' %}status-completed
+                                            {% endif %}">
+                                            {{ schedule.status }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Customer Feedback -->
+        {% set customerFeedback = [
+            {'customerName': 'Alice', 'product': 'Summer T-Shirt', 'rating': 5, 'comments': 'Great quality!', 'date': '2025-10-10 12:30'},
+            {'customerName': 'Bob', 'product': 'Coffee Mug', 'rating': 4, 'comments': 'Good print, a bit small.', 'date': '2025-10-11 15:00'},
+            {'customerName': 'Charlie', 'product': 'Cap', 'rating': 3, 'comments': 'Average, expected better.', 'date': '2025-10-12 09:45'}
+        ] %}
+
+        <div class="card">
+            <h2>Customer Feedback</h2>
+            <div class="table-wrapper">
+                {% if customerFeedback is empty %}
+                    <p class="empty-state">No customer feedback found.</p>
+                {% else %}
+                    <table class="reports-table">
+                        <thead>
+                            <tr>
+                                <th>Customer</th>
+                                <th>Product</th>
+                                <th>Rating</th>
+                                <th>Comments</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for feedback in customerFeedback %}
+                                <tr>
+                                    <td>{{ feedback.customerName }}</td>
+                                    <td>{{ feedback.product }}</td>
+                                    <td><span class="rating">★ {{ feedback.rating }}/5</span></td>
+                                    <td>{{ feedback.comments }}</td>
+                                    <td>{{ feedback.date }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+</main>
+{% endblock %}

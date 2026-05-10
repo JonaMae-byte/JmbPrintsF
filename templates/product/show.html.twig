@@ -1,0 +1,434 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Product Details | JMB Prints{% endblock %}
+
+{% block body %}
+<style>
+/* ========= PAGE SHELL ========= */
+.page-show-shell {
+    padding: 32px;
+    min-height: calc(100vh - 120px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ========= DETAILS CONTAINER ========= */
+.details-container {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* ========= PAGE HEADER ========= */
+.page-header {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    padding: 24px 32px;
+    border-radius: 16px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.page-header h1 {
+    font-size: 32px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* ========= CONTENT CARD ========= */
+.content-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 16px;
+    padding: 40px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+/* ========= PRODUCT LAYOUT ========= */
+.product-layout {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 28px;
+    margin-bottom: 32px;
+    align-items: start;
+}
+
+/* ========= IMAGE SECTION ========= */
+.image-section {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.product-image-container {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 16px;
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+    box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
+}
+
+.product-image {
+    width: 100%;
+    height: 380px;
+    object-fit: contain;
+    border-radius: 12px;
+    background: #fff;
+}
+
+.no-image {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 300px;
+    color: #cbd5e0;
+}
+
+.no-image i {
+    font-size: 80px;
+    margin-bottom: 16px;
+}
+
+.no-image p {
+    font-size: 16px;
+    margin: 0;
+}
+
+/* ========= DETAILS SECTION ========= */
+.details-section {
+    display: grid;
+    gap: 14px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 22px;
+    box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
+}
+
+.detail-item {
+    background: #ffffff;
+    padding: 0 0 12px;
+    border-radius: 0;
+    border: none;
+    border-bottom: 1px dashed #dbe3ee;
+    transition: all 0.3s ease;
+}
+
+.details-section .detail-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.detail-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #718096;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+
+.detail-label i {
+    font-size: 14px;
+    color: #007bff;
+}
+
+.detail-value {
+    font-size: 18px;
+    font-weight: 600;
+    color: #2d3748;
+    word-break: break-word;
+}
+
+.detail-value.product-name {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.detail-value.description {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.6;
+    color: #4a5568;
+}
+
+.detail-value.price {
+    font-size: 34px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.left-metrics {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.left-metric {
+    background: #ffffff;
+    border: 1px solid #dbe3ee;
+    border-radius: 12px;
+    padding: 12px;
+}
+
+.left-metric .detail-label {
+    margin-bottom: 6px;
+    font-size: 11px;
+}
+
+.left-metric .detail-value {
+    font-size: 17px;
+}
+
+/* ========= INFO BANNER ========= */
+.info-banner {
+    background: linear-gradient(135deg, rgba(23, 162, 184, 0.1) 0%, rgba(19, 132, 150, 0.1) 100%);
+    border: 2px solid rgba(23, 162, 184, 0.3);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.info-banner i {
+    font-size: 20px;
+    color: #17a2b8;
+}
+
+.info-banner p {
+    margin: 0;
+    font-size: 14px;
+    color: #2d3748;
+    font-weight: 500;
+}
+
+/* ========= ACTION BUTTONS ========= */
+.action-buttons {
+    display: flex;
+    gap: 12px;
+    padding-top: 24px;
+    border-top: 2px solid #f0f0f0;
+}
+
+.btn {
+    padding: 14px 32px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 15px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: none;
+    cursor: pointer;
+    flex: 1;
+}
+
+.btn-back {
+    background: rgba(255, 255, 255, 0.95);
+    color: #4a5568;
+    border: 2px solid #e2e8f0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.btn-back:hover {
+    background: #f8f9fa;
+    border-color: #cbd5e0;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.btn-edit {
+    background: linear-gradient(135deg, #005b96, #007bff);
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 91, 150, 0.3);
+}
+
+.btn-edit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 91, 150, 0.4);
+}
+
+.btn-delete {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    color: white;
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+
+.btn-delete:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(220, 53, 69, 0.4);
+}
+
+/* ========= RESPONSIVE ========= */
+@media (max-width: 768px) {
+    .page-show-shell {
+        padding: 20px;
+    }
+
+    .page-header {
+        padding: 20px;
+    }
+
+    .page-header h1 {
+        font-size: 24px;
+    }
+
+    .content-card {
+        padding: 24px;
+    }
+
+    .product-layout {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
+    }
+
+    .detail-value.product-name {
+        font-size: 20px;
+    }
+
+    .detail-value.price {
+        font-size: 28px;
+    }
+}
+</style>
+
+<div class="page-show-shell">
+    <div class="details-container">
+        <div class="page-header">
+            <h1>
+                <i class="fas fa-eye"></i>
+                Product Details
+            </h1>
+        </div>
+
+        <div class="content-card">
+            <div class="info-banner">
+                <i class="fas fa-info-circle"></i>
+                <p>Viewing product information for ID #{{ product.id }}</p>
+            </div>
+
+            <div class="product-layout">
+                <div class="image-section">
+                    <div class="product-image-container">
+                        {% if product.image %}
+                            <img src="{{ product.image }}" alt="{{ product.name }}" class="product-image">
+                        {% else %}
+                            <div class="no-image">
+                                <i class="fas fa-image"></i>
+                                <p>No image available</p>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="left-metrics">
+                        <div class="left-metric">
+                            <div class="detail-label"><i class="fas fa-box-open"></i>Stocks Left</div>
+                            <div class="detail-value">{{ stocksLeft }}</div>
+                        </div>
+                        <div class="left-metric">
+                            <div class="detail-label"><i class="fas fa-plus-circle"></i>Quantity Added</div>
+                            <div class="detail-value">{{ quantityAdded }}</div>
+                        </div>
+                        <div class="left-metric">
+                            <div class="detail-label"><i class="fas fa-minus-circle"></i>Quantity Withdrawn</div>
+                            <div class="detail-value">{{ quantityWithdrawn }}</div>
+                        </div>
+                        <div class="left-metric">
+                            <div class="detail-label"><i class="fas fa-user-plus"></i>Added By</div>
+                            <div class="detail-value">{{ product.createdBy ?: 'Not available' }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="details-section">
+                    <div class="detail-item">
+                        <div class="detail-label">
+                            <i class="fas fa-hashtag"></i>
+                            Product ID
+                        </div>
+                        <div class="detail-value">#{{ product.id }}</div>
+                    </div>
+
+                    <div class="detail-item">
+                        <div class="detail-label">
+                            <i class="fas fa-tag"></i>
+                            Product Name
+                        </div>
+                        <div class="detail-value product-name">{{ product.name }}</div>
+                    </div>
+
+                    <div class="detail-item">
+                        <div class="detail-label">
+                            <i class="fas fa-align-left"></i>
+                            Description
+                        </div>
+                        <div class="detail-value description">{{ product.text }}</div>
+                    </div>
+
+                    <div class="detail-item">
+                        <div class="detail-label">
+                            <i class="fas fa-tag"></i>
+                            Category
+                        </div>
+                        <div class="detail-value product-category">{{ product.category }}</div>
+                    </div>
+
+                    <div class="detail-item">
+                        <div class="detail-label">
+                            <i class="fas fa-peso-sign"></i>
+                            Price
+                        </div>
+                        <div class="detail-value price">₱{{ product.price|number_format(2, '.', ',') }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <a href="{{ path('app_product_index') }}" class="btn btn-back">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to List
+                </a>
+                <a href="{{ path('app_product_edit', {'id': product.id}) }}" class="btn btn-edit">
+                    <i class="fas fa-edit"></i>
+                    Edit Product
+                </a>
+                {{ include('product/_delete_form.html.twig') }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

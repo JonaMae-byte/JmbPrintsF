@@ -1,0 +1,35 @@
+﻿version: "3.9"
+services:
+  mysql:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: test_demo_root_password
+      MYSQL_DATABASE: test_demo_db
+      MYSQL_USER: TEST_DEMO_USER
+      MYSQL_PASSWORD: test_demo_password
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - test_demo_network
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: TEST_DEMO_USER
+      PMA_PASSWORD: test_demo_password
+      PMA_PORT: 3306
+    ports:
+      - "8080:80"
+    depends_on:
+      - mysql
+    networks:
+      - test_demo_network
+volumes:
+  mysql_data:
+networks:
+  test_demo_network:
+    driver: bridge

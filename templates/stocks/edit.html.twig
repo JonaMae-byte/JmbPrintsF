@@ -1,0 +1,285 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Stock | JMB Prints{% endblock %}
+
+{% block navbar %}
+    {% include 'navbar.html.twig' %}
+{% endblock %}
+
+{% block body %}
+<style>
+/* ========= PAGE CONTENT (scoped: do not style outer layout <main>) ========= */
+.page-edit-shell {
+    padding: 32px;
+    margin-left: 0 !important;
+    transition: none !important;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ========= FORM CONTAINER ========= */
+.form-container {
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+/* ========= PAGE HEADER ========= */
+.page-header {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    padding: 24px 32px;
+    border-radius: 16px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.page-header h1 {
+    font-size: 32px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #005b96 0%, #007bff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* ========= CONTENT CARD ========= */
+.content-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 16px;
+    padding: 40px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+/* ========= FORM STYLES ========= */
+.form-group {
+    margin-bottom: 24px;
+}
+
+.form-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 15px;
+    color: #2d3748;
+    margin-bottom: 10px;
+}
+
+.form-label i {
+    color: #007bff;
+    font-size: 16px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 14px 18px;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 15px;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+/* ========= BUTTONS ========= */
+.form-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 32px;
+}
+
+.btn {
+    padding: 14px 32px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 15px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #005b96, #007bff);
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 91, 150, 0.3);
+    flex: 1;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 91, 150, 0.4);
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.95);
+    color: #4a5568;
+    border: 2px solid #e2e8f0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.btn-secondary:hover {
+    background: #f8f9fa;
+    border-color: #cbd5e0;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* ========= DELETE SECTION ========= */
+.delete-section {
+    margin-top: 32px;
+    padding-top: 32px;
+    border-top: 2px solid #f0f0f0;
+}
+
+.delete-section h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #dc3545;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.delete-section p {
+    font-size: 14px;
+    color: #718096;
+    margin-bottom: 16px;
+}
+
+.btn-delete {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    color: white;
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+    padding: 12px 28px;
+}
+
+.btn-delete:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(220, 53, 69, 0.4);
+}
+
+/* ========= FORM FIELD WRAPPER ========= */
+.form-field {
+    position: relative;
+}
+
+/* ========= RESPONSIVE ========= */
+@media (max-width: 768px) {
+    .page-edit-shell {
+        padding: 20px;
+    }
+
+    .page-header {
+        padding: 20px;
+    }
+
+    .page-header h1 {
+        font-size: 24px;
+    }
+
+    .content-card {
+        padding: 24px;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
+    }
+
+    .btn-primary {
+        order: 1;
+    }
+
+    .btn-secondary {
+        order: 2;
+    }
+}
+</style>
+
+<div class="page-edit-shell">
+    <div class="form-container">
+        <div class="page-header">
+            <h1>
+                <i class="fas fa-edit"></i>
+                Edit Stock
+            </h1>
+        </div>
+
+        <div class="content-card">
+            {{ form_start(form) }}
+                
+                <!-- Product Name -->
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-tag"></i>
+                        Product Name
+                    </label>
+                    <div class="form-field">
+                        {{ form_widget(form.product, {'attr': {'class': 'form-control', 'placeholder': 'Enter product name'}}) }}
+                    </div>
+                </div>
+
+                <!-- Quantity -->
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-sort-numeric-up"></i>
+                        Quantity to Add
+                    </label>
+                    <div class="form-field">
+                        {{ form_widget(form.quantity, {'attr': {'class': 'form-control', 'min': 0, 'placeholder': 'Enter quantity to add'}}) }}
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <a href="{{ path('app_stocks_index') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i>
+                        Back to List
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i>
+                        Save Changes
+                    </button>
+                </div>
+
+            {{ form_end(form) }}
+
+            <!-- Delete Section -->
+            <div class="delete-section">
+                <h3>
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Danger Zone
+                </h3>
+                <p>Once you delete this stock, there is no going back. Please be certain.</p>
+                {{ include('stocks/_delete_form.html.twig') }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,260 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Category Details | JMB Prints{% endblock %}
+
+{% block body %}
+<style>
+/* ========= PAGE SHELL ========= */
+.page-show-shell {
+    padding: 40px;
+    min-height: calc(100vh - 120px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ========= DETAILS CONTAINER ========= */
+.details-container {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* ========= PAGE HEADER ========= */
+.page-header {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    padding: 32px 40px;
+    border-radius: 20px;
+    margin-bottom: 28px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.page-header h1 {
+    font-size: 38px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #007bff 0%, #00c6ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.page-header h1 i {
+    font-size: 36px;
+    background: linear-gradient(135deg, #007bff 0%, #00c6ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* ========= CONTENT CARD ========= */
+.content-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 48px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+/* ========= DETAILS TABLE ========= */
+.details-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 16px;
+    margin-bottom: 40px;
+}
+
+.details-table tr {
+    background: rgba(248, 250, 252, 0.8);
+    border-radius: 14px;
+    transition: all 0.3s ease;
+}
+
+.details-table tr:hover {
+    background: rgba(240, 245, 250, 0.9);
+    transform: translateX(4px);
+}
+
+.details-table th {
+    text-align: left;
+    font-size: 16px;
+    font-weight: 600;
+    color: #2d3748;
+    padding: 20px 24px;
+    width: 40%;
+    border-radius: 14px 0 0 14px;
+}
+
+.details-table td {
+    text-align: left;
+    font-size: 16px;
+    color: #4a5568;
+    padding: 20px 24px;
+    border-radius: 0 14px 14px 0;
+}
+
+/* ========= BUTTONS ========= */
+.details-actions {
+    display: flex;
+    gap: 16px;
+    margin-top: 40px;
+}
+
+.btn {
+    padding: 16px 36px;
+    border-radius: 14px;
+    font-weight: 600;
+    font-size: 16px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    border: none;
+    cursor: pointer;
+    flex: 1;
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.95);
+    color: #4a5568;
+    border: 2px solid #e2e8f0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.btn-secondary:hover {
+    background: #f8f9fa;
+    border-color: #cbd5e0;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #007bff, #00c6ff);
+    color: white;
+    box-shadow: 0 6px 16px rgba(0, 123, 255, 0.35);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 123, 255, 0.45);
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    color: white;
+    box-shadow: 0 6px 16px rgba(220, 53, 69, 0.35);
+}
+
+.btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(220, 53, 69, 0.45);
+}
+
+/* ========= RESPONSIVE ========= */
+@media (max-width: 768px) {
+    .page-show-shell {
+        padding: 24px;
+    }
+
+    .page-header {
+        padding: 24px;
+    }
+
+    .page-header h1 {
+        font-size: 28px;
+    }
+
+    .page-header h1 i {
+        font-size: 26px;
+    }
+
+    .content-card {
+        padding: 28px;
+    }
+
+    .details-table th,
+    .details-table td {
+        display: block;
+        width: 100%;
+        border-radius: 14px;
+        padding: 16px 20px;
+    }
+
+    .details-table th {
+        padding-bottom: 8px;
+        font-size: 14px;
+        color: #64748b;
+    }
+
+    .details-table td {
+        padding-top: 8px;
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .details-actions {
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
+    }
+}
+</style>
+
+<div class="page-show-shell">
+    <div class="details-container">
+        <div class="page-header">
+            <h1>
+                <i class="fas fa-folder"></i>
+                Category Details
+            </h1>
+        </div>
+
+        <div class="content-card">
+            <table class="details-table">
+                <tr>
+                    <th>ID</th>
+                    <td>{{ category.id }}</td>
+                </tr>
+                <tr>
+                    <th>Category Name</th>
+                    <td>{{ category.name }}</td>
+                </tr>
+                <tr>
+                    <th>Date Added</th>
+                    <td>
+                        {% if category.createdAt %}
+                            {{ category.createdAt|date('F j, Y g:i A') }}
+                        {% else %}
+                            Not available
+                        {% endif %}
+                    </td>
+                </tr>
+            </table>
+
+            <div class="details-actions">
+                <a href="{{ path('app_category_index') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to List
+                </a>
+                <a href="{{ path('app_category_edit', {'id': category.id}) }}" class="btn btn-primary">
+                    <i class="fas fa-edit"></i>
+                    Edit
+                </a>
+                {{ include('category/_delete_form.html.twig') }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

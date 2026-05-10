@@ -1,0 +1,394 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Staff Dashboard | JMB Prints{% endblock %}
+
+{% block navbar %}
+    {% include 'navbar.html.twig' %}
+{% endblock %}
+
+{% block body %}
+<style>
+.staff-dashboard {
+    --staff-bg0: #0a0f18;
+    --staff-bg1: #111827;
+    --staff-card: rgba(24, 33, 54, 0.92);
+    --staff-border: rgba(59, 130, 246, 0.18);
+    --staff-accent: #3b82f6;
+    --staff-accent2: #22d3ee;
+    --staff-text: #e5e7eb;
+    --staff-muted: #94a3b8;
+    margin: -32px;
+    padding: 32px;
+    min-height: calc(100vh - 32px);
+    background: linear-gradient(165deg, var(--staff-bg0) 0%, #0f172a 42%, var(--staff-bg1) 100%);
+    color: var(--staff-text);
+}
+
+.staff-dashboard__header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 28px;
+}
+
+.staff-dashboard__title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0 0 6px 0;
+}
+
+.staff-dashboard__subtitle {
+    margin: 0;
+    color: var(--staff-muted);
+    font-size: 0.95rem;
+}
+
+.staff-dashboard__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    background: rgba(59, 130, 246, 0.15);
+    color: #93c5fd;
+    border: 1px solid var(--staff-border);
+}
+
+.staff-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+    margin-bottom: 28px;
+}
+
+.staff-stat-card {
+    position: relative;
+    border-radius: 18px;
+    padding: 22px 22px 20px;
+    background: var(--staff-card);
+    border: 1px solid var(--staff-border);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    overflow: hidden;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.staff-stat-card::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--staff-accent), var(--staff-accent2));
+    opacity: 0.85;
+}
+
+.staff-stat-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(59, 130, 246, 0.25);
+    border-color: rgba(59, 130, 246, 0.35);
+}
+
+.staff-stat-card__icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.35rem;
+    margin-bottom: 14px;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.25), rgba(34, 211, 238, 0.12));
+    color: #7dd3fc;
+    transition: transform 0.25s ease, color 0.25s ease;
+}
+
+.staff-stat-card:hover .staff-stat-card__icon {
+    transform: scale(1.08) rotate(-3deg);
+    color: #bae6fd;
+}
+
+.staff-stat-card__label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--staff-muted);
+    margin: 0 0 6px 0;
+}
+
+.staff-stat-card__value {
+    font-size: 1.85rem;
+    font-weight: 700;
+    margin: 0;
+    color: #f8fafc;
+}
+
+.staff-stat-card__hint {
+    margin: 8px 0 0 0;
+    font-size: 0.8rem;
+    color: var(--staff-muted);
+}
+
+.staff-panels {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 22px;
+}
+
+@media (min-width: 1024px) {
+    .staff-panels {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 340px);
+        align-items: start;
+    }
+}
+
+.staff-panel {
+    border-radius: 18px;
+    background: var(--staff-card);
+    border: 1px solid var(--staff-border);
+    padding: 22px 24px;
+    backdrop-filter: blur(12px);
+}
+
+.staff-panel__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.staff-panel__title {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.staff-panel__title i {
+    color: var(--staff-accent);
+}
+
+.staff-panel__link {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #7dd3fc;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.staff-panel__link:hover {
+    color: #e0f2fe;
+}
+
+.staff-status-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.staff-status-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: rgba(15, 23, 42, 0.55);
+    border: 1px solid rgba(148, 163, 184, 0.12);
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.staff-status-row:hover {
+    background: rgba(30, 41, 59, 0.75);
+    border-color: rgba(59, 130, 246, 0.2);
+}
+
+.staff-status-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.staff-status-pill {
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: rgba(59, 130, 246, 0.2);
+    color: #bfdbfe;
+}
+
+.staff-table-wrap {
+    overflow-x: auto;
+    border-radius: 12px;
+    border: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.staff-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+}
+
+.staff-table th {
+    text-align: left;
+    padding: 12px 14px;
+    background: rgba(15, 23, 42, 0.85);
+    color: var(--staff-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+}
+
+.staff-table td {
+    padding: 14px;
+    border-top: 1px solid rgba(148, 163, 184, 0.1);
+    color: var(--staff-text);
+}
+
+.staff-table tbody tr {
+    transition: background 0.2s ease;
+}
+
+.staff-table tbody tr:hover {
+    background: rgba(59, 130, 246, 0.08);
+}
+
+.staff-order-id {
+    font-weight: 700;
+    color: #7dd3fc;
+}
+
+.staff-tag {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.staff-tag--pending { background: rgba(234, 179, 8, 0.2); color: #fde047; }
+.staff-tag--processing { background: rgba(59, 130, 246, 0.25); color: #93c5fd; }
+.staff-tag--completed { background: rgba(34, 197, 94, 0.2); color: #86efac; }
+.staff-tag--cancelled { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
+.staff-tag--default { background: rgba(148, 163, 184, 0.2); color: #cbd5e1; }
+
+.staff-empty {
+    text-align: center;
+    padding: 32px 16px;
+    color: var(--staff-muted);
+    font-size: 0.9rem;
+}
+</style>
+
+<div class="staff-dashboard" id="staff-dashboard-page">
+    <header class="staff-dashboard__header">
+        <div>
+            <h1 class="staff-dashboard__title">Staff dashboard</h1>
+            <p class="staff-dashboard__subtitle">Orders, customers, and status at a glance.</p>
+        </div>
+        <span class="staff-dashboard__badge">
+            <i class="fas fa-id-badge" aria-hidden="true"></i>
+            Staff
+        </span>
+    </header>
+
+    <div class="staff-stats-grid">
+        <article class="staff-stat-card">
+            <div class="staff-stat-card__icon" aria-hidden="true"><i class="fas fa-shopping-bag"></i></div>
+            <p class="staff-stat-card__label">Total orders</p>
+            <p class="staff-stat-card__value">{{ total_orders }}</p>
+            <p class="staff-stat-card__hint">All time</p>
+        </article>
+        <article class="staff-stat-card">
+            <div class="staff-stat-card__icon" aria-hidden="true"><i class="fas fa-users"></i></div>
+            <p class="staff-stat-card__label">Customers</p>
+            <p class="staff-stat-card__value">{{ customers_count }}</p>
+            <p class="staff-stat-card__hint">Accounts with orders</p>
+        </article>
+        <article class="staff-stat-card">
+            <div class="staff-stat-card__icon" aria-hidden="true"><i class="fas fa-coins"></i></div>
+            <p class="staff-stat-card__label">Total sales</p>
+            <p class="staff-stat-card__value">₱{{ total_sales|number_format(2, '.', ',') }}</p>
+            <p class="staff-stat-card__hint">Sum of line subtotals</p>
+        </article>
+        <article class="staff-stat-card">
+            <div class="staff-stat-card__icon" aria-hidden="true"><i class="fas fa-clock"></i></div>
+            <p class="staff-stat-card__label">Pending</p>
+            <p class="staff-stat-card__value">{{ pending_count }}</p>
+            <p class="staff-stat-card__hint">{{ completed_count }} completed total</p>
+        </article>
+    </div>
+
+    <div class="staff-panels">
+        <section class="staff-panel">
+            <div class="staff-panel__head">
+                <h2 class="staff-panel__title"><i class="fas fa-list" aria-hidden="true"></i> Recent orders</h2>
+                <a href="{{ path('orders_index') }}" class="staff-panel__link">View all <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+            </div>
+            {% if recent_orders is empty %}
+                <p class="staff-empty">No orders yet.</p>
+            {% else %}
+                <div class="staff-table-wrap">
+                    <table class="staff-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Customer</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in recent_orders %}
+                                {% set st = (order.status|default(''))|lower %}
+                                {% set tag_class = st == 'pending' ? 'staff-tag--pending'
+                                    : st == 'processing' ? 'staff-tag--processing'
+                                    : st == 'completed' ? 'staff-tag--completed'
+                                    : st == 'cancelled' ? 'staff-tag--cancelled'
+                                    : 'staff-tag--default' %}
+                                <tr>
+                                    <td><span class="staff-order-id">#{{ order.id }}</span></td>
+                                    <td>{{ order.customerName|default('—') }}</td>
+                                    <td><span class="staff-tag {{ tag_class }}">{{ order.status }}</span></td>
+                                    <td>{{ order.createdAt ? order.createdAt|date('M j, Y g:i A') : '—' }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+        </section>
+
+        <section class="staff-panel">
+            <div class="staff-panel__head">
+                <h2 class="staff-panel__title"><i class="fas fa-chart-pie" aria-hidden="true"></i> Order statuses</h2>
+            </div>
+            {% if status_counts is empty %}
+                <p class="staff-empty">No status data.</p>
+            {% else %}
+                <div class="staff-status-list">
+                    {% for status, count in status_counts %}
+                        <div class="staff-status-row">
+                            <span class="staff-status-name">{{ status }}</span>
+                            <span class="staff-status-pill">{{ count }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </section>
+    </div>
+</div>
+{% endblock %}

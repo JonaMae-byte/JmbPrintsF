@@ -1,0 +1,544 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}🔥 Promotions | JMB Prints{% endblock %}
+
+{% block body %}
+<style>
+/* ========= MAIN CONTENT ========= */
+main {
+    padding: 32px;
+    margin-left: 0 !important;
+    transition: none !important;
+}
+
+/* ========= PAGE HEADER ========= */
+.page-header {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    padding: 24px 32px;
+    border-radius: 16px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.page-header h1 {
+    font-size: 32px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #005b96 0%, #007bff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0;
+}
+
+/* ========= PROMO CONTAINER ========= */
+.promo-container {
+    display: grid;
+    grid-template-columns: 400px 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+/* ========= LEFT COLUMN ========= */
+.promo-left {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* ========= HERO SECTION ========= */
+.promo-hero {
+    background: linear-gradient(135deg, #005b96 0%, #007bff 100%);
+    border-radius: 16px;
+    padding: 40px 30px;
+    text-align: center;
+    box-shadow: 0 4px 24px rgba(0, 91, 150, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.promo-hero h2 {
+    font-size: 28px;
+    font-weight: 700;
+    color: white;
+    margin: 0 0 12px 0;
+}
+
+.promo-hero p {
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0 0 24px 0;
+}
+
+.btn-shop {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: white;
+    color: #005b96;
+    padding: 12px 28px;
+    font-size: 15px;
+    border: none;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.btn-shop:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+}
+
+/* ========= ADD PROMO FORM ========= */
+.add-promo-form {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    padding: 28px;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.add-promo-form h3 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #005b96;
+    margin: 0 0 20px 0;
+}
+
+.add-promo-form input {
+    width: 100%;
+    padding: 12px 18px;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 15px;
+    margin-bottom: 12px;
+    outline: none;
+    transition: all 0.3s ease;
+    font-family: 'Inter', sans-serif;
+    box-sizing: border-box;
+}
+
+.add-promo-form input:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.add-promo-form button {
+    width: 100%;
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
+.add-promo-form button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(40, 167, 69, 0.4);
+}
+
+/* ========= RIGHT COLUMN - PRODUCTS GRID ========= */
+.promo-right {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 16px;
+    padding: 32px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.promo-products {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
+}
+
+/* ========= PROMO CARD ========= */
+.promo-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    border: 2px solid #f0f0f0;
+}
+
+.promo-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    border-color: #007bff;
+}
+
+.promo-card img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    border: 2px solid #e2e8f0;
+}
+
+.promo-card h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #005b96;
+    margin: 0 0 12px 0;
+}
+
+.promo-card p {
+    font-size: 16px;
+    color: #4a5568;
+    margin: 0 0 16px 0;
+    font-weight: 600;
+}
+
+.discount {
+    display: inline-block;
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-left: 8px;
+}
+
+.card-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.card-actions button {
+    flex: 1;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.btn-edit {
+    background: linear-gradient(135deg, #ffc107, #e0a800);
+    color: #333;
+    box-shadow: 0 2px 8px rgba(255, 193, 7, 0.3);
+}
+
+.btn-edit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 193, 7, 0.4);
+}
+
+.btn-delete {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    color: white;
+    box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+}
+
+.btn-delete:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
+}
+
+/* ========= MODAL ========= */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+}
+
+.modal-content {
+    background: white;
+    margin: 8% auto;
+    padding: 32px;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 450px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.modal-content h3 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #005b96;
+    margin: 0 0 20px 0;
+}
+
+.modal-content input {
+    width: 100%;
+    padding: 12px 18px;
+    margin-bottom: 16px;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 15px;
+    outline: none;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+.modal-content input:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.modal-content button {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    margin-right: 10px;
+    transition: all 0.3s ease;
+}
+
+.save-btn {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    box-shadow: 0 3px 8px rgba(40, 167, 69, 0.3);
+}
+
+.save-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 12px rgba(40, 167, 69, 0.4);
+}
+
+.cancel-btn {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    color: white;
+    box-shadow: 0 3px 8px rgba(220, 53, 69, 0.3);
+}
+
+.cancel-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 12px rgba(220, 53, 69, 0.4);
+}
+
+/* ========= RESPONSIVE ========= */
+@media (max-width: 1200px) {
+    .promo-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .promo-products {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    main {
+        padding: 20px;
+    }
+    
+    .page-header {
+        padding: 20px;
+    }
+    
+    .page-header h1 {
+        font-size: 24px;
+    }
+    
+    .promo-hero {
+        padding: 30px 20px;
+    }
+    
+    .promo-hero h2 {
+        font-size: 24px;
+    }
+    
+    .promo-right {
+        padding: 20px;
+    }
+    
+    .promo-products {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<main>
+    <div class="page-header">
+        <h1>🔥 Promotions Management</h1>
+    </div>
+
+    <div class="promo-container">
+        <div class="promo-left">
+            <div class="promo-hero">
+                <h2>🔥 Limited Time Promo!</h2>
+                <p>Grab your favorite designs now! While stocks last.</p>
+                <a href="{{ path('app_stocks_index') }}" class="btn-shop">
+                    <i class="fas fa-shopping-cart"></i>
+                    Shop Now
+                </a>
+            </div>
+
+            <div class="add-promo-form">
+                <h3>Add New Promo Product</h3>
+                <input type="text" id="promoName" placeholder="Product Name">
+                <input type="number" id="promoPrice" placeholder="Price">
+                <input type="text" id="promoImage" placeholder="Image URL">
+                <button onclick="addPromo()">
+                    <i class="fas fa-plus"></i>
+                    Add Promo
+                </button>
+            </div>
+        </div>
+
+        <div class="promo-right">
+            <div class="promo-products" id="promoProducts">
+                {% set sampleProducts = [
+                    {'name': 'Summer T-Shirt', 'price': 250, 'imageUrl': '/images/tshirt1.jpg'},
+                    {'name': 'Coffee Mug', 'price': 180, 'imageUrl': '/images/mug1.jpg'},
+                    {'name': 'Cap', 'price': 150, 'imageUrl': '/images/cap1.jpg'}
+                ] %}
+                {% for product in sampleProducts %}
+                    <div class="promo-card">
+                        <img src="{{ product.imageUrl }}" alt="{{ product.name }}">
+                        <h3>{{ product.name }}</h3>
+                        <p>₱{{ product.price }} <span class="discount">20% OFF</span></p>
+                        <div class="card-actions">
+                            <button class="btn-edit" onclick="openEditModal(this)">
+                                <i class="fas fa-edit"></i>
+                                Edit
+                            </button>
+                            <button class="btn-delete" onclick="openDeleteModal(this)">
+                                <i class="fas fa-trash"></i>
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Edit Modal -->
+<div class="modal" id="editModal">
+    <div class="modal-content">
+        <h3>Edit Promo</h3>
+        <input type="text" id="editName" placeholder="Product Name">
+        <input type="number" id="editPrice" placeholder="Price">
+        <input type="text" id="editImage" placeholder="Image URL">
+        <button class="save-btn" onclick="saveEdit()">
+            <i class="fas fa-save"></i>
+            Save
+        </button>
+        <button class="cancel-btn" onclick="closeModal('editModal')">
+            <i class="fas fa-times"></i>
+            Cancel
+        </button>
+    </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal" id="deleteModal">
+    <div class="modal-content">
+        <h3>Confirm Delete</h3>
+        <p style="color: #4a5568; margin-bottom: 24px;">Are you sure you want to delete this promo?</p>
+        <button class="save-btn" onclick="confirmDelete()">
+            <i class="fas fa-check"></i>
+            Yes, Delete
+        </button>
+        <button class="cancel-btn" onclick="closeModal('deleteModal')">
+            <i class="fas fa-times"></i>
+            Cancel
+        </button>
+    </div>
+</div>
+
+<script>
+let currentCard = null;
+
+function addPromo() {
+    const name = document.getElementById('promoName').value;
+    const price = document.getElementById('promoPrice').value;
+    const image = document.getElementById('promoImage').value;
+    if(!name || !price || !image) return alert('Please fill all fields');
+    const container = document.getElementById('promoProducts');
+    const card = document.createElement('div');
+    card.className = 'promo-card';
+    card.innerHTML = `
+        <img src="${image}" alt="${name}">
+        <h3>${name}</h3>
+        <p>₱${price} <span class="discount">20% OFF</span></p>
+        <div class="card-actions">
+            <button class="btn-edit" onclick="openEditModal(this)">
+                <i class="fas fa-edit"></i>
+                Edit
+            </button>
+            <button class="btn-delete" onclick="openDeleteModal(this)">
+                <i class="fas fa-trash"></i>
+                Delete
+            </button>
+        </div>
+    `;
+    container.appendChild(card);
+    document.getElementById('promoName').value = '';
+    document.getElementById('promoPrice').value = '';
+    document.getElementById('promoImage').value = '';
+}
+
+function openEditModal(btn) {
+    currentCard = btn.closest('.promo-card');
+    document.getElementById('editName').value = currentCard.querySelector('h3').innerText;
+    const priceText = currentCard.querySelector('p').innerText.replace('₱','').replace(' 20% OFF','').trim();
+    document.getElementById('editPrice').value = priceText;
+    document.getElementById('editImage').value = currentCard.querySelector('img').src;
+    document.getElementById('editModal').style.display = 'block';
+}
+
+function saveEdit() {
+    if(!currentCard) return;
+    currentCard.querySelector('h3').innerText = document.getElementById('editName').value;
+    currentCard.querySelector('p').innerHTML = `₱${document.getElementById('editPrice').value} <span class="discount">20% OFF</span>`;
+    currentCard.querySelector('img').src = document.getElementById('editImage').value;
+    closeModal('editModal');
+}
+
+function openDeleteModal(btn) {
+    currentCard = btn.closest('.promo-card');
+    document.getElementById('deleteModal').style.display = 'block';
+}
+
+function confirmDelete() {
+    if(currentCard) currentCard.remove();
+    closeModal('deleteModal');
+}
+
+function closeModal(id) {
+    document.getElementById(id).style.display = 'none';
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    const editModal = document.getElementById('editModal');
+    const deleteModal = document.getElementById('deleteModal');
+    if(event.target === editModal) editModal.style.display = 'none';
+    if(event.target === deleteModal) deleteModal.style.display = 'none';
+}
+</script>
+{% endblock %}

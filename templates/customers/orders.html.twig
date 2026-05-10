@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<h1>Orders of {{ user.username }}</h1>
+
+<table border="1" cellpadding="8" cellspacing="0">
+  <thead>
+    <tr>
+      <th>Order ID</th>
+      <th>Status</th>
+      <th>Created At</th>
+      <th>Total Items</th>
+      <th>Categories</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {% for order in orders %}
+      <tr>
+        <td>{{ order.id }}</td>
+        <td>{{ order.status }}</td>
+        <td>{{ order.createdAt|date('Y-m-d H:i') }}</td>
+        <td>{{ order.orderItems|length }}</td>
+        <td>
+          {% set categories = [] %}
+          {% for item in order.orderItems %}
+            {% set categoryName = item.product and item.product.category ? item.product.category.name : 'Uncategorized' %}
+            {% if categoryName not in categories %}
+              {% set categories = categories|merge([categoryName]) %}
+            {% endif %}
+          {% endfor %}
+          {{ categories|join(', ') }}
+        </td>
+      </tr>
+    {% else %}
+      <tr><td colspan="5">No orders found.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<a href="{{ path('app_customers') }}">← Back to Customers</a>
+
+{% endblock %}
